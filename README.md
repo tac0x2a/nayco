@@ -1,2 +1,2 @@
 # biwako
-Biwako is all in one micro DataLake for IoT data
+Biwako is an all in one micro Data Lake for IoT data.
