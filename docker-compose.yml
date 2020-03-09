@@ -34,3 +34,14 @@ services:
       - "8123:8123" # HTTP client port
     volumes:
       - ./volume/clickhouse:/var/lib/clickhouse
+
+  # Portainer - Monitoring containers
+  portainer: # admin - tryportainer
+    image: portainer/portainer:1.23.1
+    hostname: portainer
+    restart: always
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./volume/portainer/data:/data

@@ -17,4 +17,9 @@ Grebe is forwarder JSON message from RabbitMQ to Clickhouse.
 
 ## [ClickHouse](https://clickhouse.tech/)
 ClickHouse is a free analytics DBMS for big data. Central data storage of Biwako.
+Default database is `default`, and user name and password is `default`.
 + 8123: HTTP client port.
+
+## [Portainer](https://www.portainer.io/)
+Portainer is a lightweight management UI. After login, please select `Local` and press `Connect` button.
++ 9000: Web interface.
