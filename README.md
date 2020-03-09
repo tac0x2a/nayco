@@ -9,6 +9,8 @@ Biwako is an all in one micro Data Lake for IoT data.
 
 ## [RabbitMQ](https://www.rabbitmq.com/)
 Message broker service. The MQTT port listen json format messages. Its general entry point of data stream to Biwako.
+
+### Ports
 + 15672: Web management console. Default account is `guest`:`guest`.
 + 1883: MQTT port.
 
@@ -18,8 +20,26 @@ Grebe is forwarder JSON message from RabbitMQ to Clickhouse.
 ## [ClickHouse](https://clickhouse.tech/)
 ClickHouse is a free analytics DBMS for big data. Central data storage of Biwako.
 Default database is `default`, and user name and password is `default`.
+
+### Ports
 + 8123: HTTP client port.
 
 ## [Portainer](https://www.portainer.io/)
 Portainer is a lightweight management UI. After login, please select `Local` and press `Connect` button.
+
+### Ports
 + 9000: Web interface.
+
+## [Metabase](https://www.metabase.com/)
+Metabase visualize data on ClickHouse. It works with [metabase-clickhouse-driver](https://github.com/enqueue/metabase-clickhouse-driver).
+
+In first access, you need to register ClickHouse table as data source.
++ Database type `ClickHouse`,
++ Database Name: any
++ Host: `clickhouse`
++ Port: `8123`
++ Database user name: `default`
++ Database password: none
+
+### Ports
++ 3000: Web interface.

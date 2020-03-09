@@ -45,3 +45,17 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./volume/portainer/data:/data
+
+  # Metabase visualize data on ClickHouse.
+  metabase:
+    build:
+      context: metabase
+    image: metabase-clickhouse
+    hostname: metabase
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - ./volume/metabase:/metabase-data
+    environment:
+      - MB_DB_FILE=/metabase-data/metabase.db
