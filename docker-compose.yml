@@ -12,6 +12,19 @@ services:
       - ./rabbitmq/rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro
       - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
 
+  # RabbitMQ to ClickHouse
+  grebe:
+    image: tac0x2a/grebe:v0.3
+    hostname: grebe
+    restart: always
+    environment:
+      - MQ_QNAME=biwako # Queue name to subscribe on RabbitMQ
+      - MQ_HOST=rabbitmq # RabbitMQ host
+      - DB_HOST=clickhouse # Clickhouse host
+    volumes:
+      - ./volume/grebe/logs:/logs
+      - ./volume/grebe/schemas:/schemas
+
   # Column-oriented DWH. db=default, user=default, pass=default
   clickhouse:
     image: yandex/clickhouse-server:20.1.6.3
