@@ -1,0 +1,13 @@
+version: "3"
+services:
+  rabbitmq:
+    image: rabbitmq:3.8.2-alpine
+    hostname: rabbitmq
+    restart: always
+    ports:
+      - "15672:15672" # Web management console. Default account guest:guest
+      - "1883:1883" # MQTT Port
+    volumes:
+      - ./rabbitmq/definitions.json:/opt/definitions.json:ro
+      - ./rabbitmq/rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro
+      - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
