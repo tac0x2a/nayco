@@ -11,3 +11,13 @@ services:
       - ./rabbitmq/definitions.json:/opt/definitions.json:ro
       - ./rabbitmq/rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro
       - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+
+  # Column-oriented DWH. db=default, user=default, pass=default
+  clickhouse:
+    image: yandex/clickhouse-server:20.1.6.3
+    hostname: clickhouse
+    restart: always
+    ports:
+      - "8123:8123" # HTTP client port
+    volumes:
+      - ./volume/clickhouse:/var/lib/clickhouse
