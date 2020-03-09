@@ -39,7 +39,19 @@ In first access, you need to register ClickHouse table as data source.
 + Host: `clickhouse`
 + Port: `8123`
 + Database user name: `default`
-+ Database password: none
++ Database password: empty
 
 ### Ports
 + 3000: Web interface.
+
+## [Tabix](https://tabix.io/)
+Open source simple business intelligence application and sql editor tool for Clickhouse.
+
++ Name: any
++ `http://host:port` : `http://<host-of-biwako-running>:8123`
++ Login: `default`
++ Password: empty
++ (Experimental) HTTP Base auth: True
+
+### Ports
++ 8080: Web interface.
