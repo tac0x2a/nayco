@@ -73,3 +73,10 @@ Open source simple business intelligence application and sql editor tool for Cli
 
 ### Ports
 + 8080: Web interface.
+
+
+## [Node-RED](https://nodered.org/)
+Node-RED is a programming tool for wiring together hardware devices, APIs and online services in new and interesting ways.
+
+### Ports
++ 1880: Web interface.

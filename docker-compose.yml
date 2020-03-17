@@ -69,3 +69,14 @@ services:
       - 8080:80
     environment:
       CH_HOST: clickhouse:8123
+
+  # Node-RED
+  node-red:
+    image: nodered/node-red-docker:v10
+    hostname: nodered
+    restart: always
+    ports:
+      - 1880:1880
+    volumes:
+      - ./volume/nodered/data:/data
+    user: root:root
