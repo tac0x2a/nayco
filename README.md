@@ -6,22 +6,7 @@ Biwako is an all in one micro Data Lake for IoT data.
 
 
 # Setup
-
-### Rasbperry Pi
-
-```
-curl -sSL https://get.docker.com/ | sh
-sudo usermod -aG docker pi
-sudo systemctl enable docker
-docker -v
-
-sudo apt install -y libffi-dev libssl-dev
-sudo apt install -y python3 python3-dev python3-pip
-sudo pip3 install docker-compose
-
-docker-compose -v
-```
-
+WIP
 
 # Services
 
