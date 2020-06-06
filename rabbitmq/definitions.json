@@ -32,7 +32,7 @@
   "policies": [],
   "queues": [
     {
-      "name": "biwako",
+      "name": "uchiumi",
       "vhost": "/",
       "durable": false,
       "auto_delete": false,
@@ -41,7 +41,7 @@
   ],
   "exchanges": [
     {
-      "name": "biwako",
+      "name": "uchiumi",
       "vhost": "/",
       "type": "fanout",
       "durable": true,
@@ -52,9 +52,9 @@
   ],
   "bindings": [
     {
-      "source": "biwako",
+      "source": "uchiumi",
       "vhost": "/",
-      "destination": "biwako",
+      "destination": "uchiumi",
       "destination_type": "queue",
       "routing_key": "*",
       "arguments": {}

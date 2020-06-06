@@ -1,9 +1,8 @@
-# Biwako
+# Uchiumi
 
-[![Biwako](./doc/img/biwako.svg)](https://github.com/tac0x2a/biwako)
+[![Uchiumi](./doc/img/uchiumi.svg)](https://github.com/tac0x2a/uchiumi)
 
-Biwako is an all in one micro Data Lake for IoT data.
-
+Uchiumi(内湖) is an all in one micro Data Lake for IoT data.
 
 # Setup
 WIP
@@ -11,7 +10,7 @@ WIP
 # Services
 
 ## [RabbitMQ](https://www.rabbitmq.com/)
-Message broker service. The MQTT port listen json format messages. Its general entry point of data stream to Biwako.
+Message broker service. The MQTT port listen json format messages. Its general entry point of data stream to Uchiumi.
 
 ### Ports
 + 15672: Web management console. Default account is `guest`:`guest`.
@@ -21,7 +20,7 @@ Message broker service. The MQTT port listen json format messages. Its general e
 Grebe is forwarder JSON message from RabbitMQ to Clickhouse.
 
 ## [ClickHouse](https://clickhouse.tech/)
-ClickHouse is a free analytics DBMS for big data. Central data storage of Biwako.
+ClickHouse is a free analytics DBMS for big data. Central data storage of Uchiumi.
 Default database is `default`, and user name and password is `default`.
 
 ### Ports
@@ -51,7 +50,7 @@ In first access, you need to register ClickHouse table as data source.
 Open source simple business intelligence application and sql editor tool for Clickhouse.
 
 + Name: any
-+ `http://host:port` : `http://<host-of-biwako-running>:8123`
++ `http://host:port` : `http://<host-of-uchiumi-running>:8123`
 + Login: `default`
 + Password: empty
 + (Experimental) HTTP Base auth: True
