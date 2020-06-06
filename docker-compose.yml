@@ -18,7 +18,7 @@ services:
     hostname: grebe
     restart: always
     environment:
-      - MQ_QNAME=biwako # Queue name to subscribe on RabbitMQ
+      - MQ_QNAME=uchiumi # Queue name to subscribe on RabbitMQ
       - MQ_HOST=rabbitmq # RabbitMQ host
       - DB_HOST=clickhouse # Clickhouse host
     volumes:
