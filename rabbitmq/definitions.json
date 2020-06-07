@@ -32,7 +32,7 @@
   "policies": [],
   "queues": [
     {
-      "name": "uchiumi",
+      "name": "nayco",
       "vhost": "/",
       "durable": false,
       "auto_delete": false,
@@ -41,7 +41,7 @@
   ],
   "exchanges": [
     {
-      "name": "uchiumi",
+      "name": "nayco",
       "vhost": "/",
       "type": "fanout",
       "durable": true,
@@ -52,9 +52,9 @@
   ],
   "bindings": [
     {
-      "source": "uchiumi",
+      "source": "nayco",
       "vhost": "/",
-      "destination": "uchiumi",
+      "destination": "nayco",
       "destination_type": "queue",
       "routing_key": "*",
       "arguments": {}

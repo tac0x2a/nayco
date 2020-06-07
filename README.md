@@ -1,8 +1,8 @@
-# Uchiumi
+# Nayco
 
-[![Uchiumi](./doc/img/uchiumi.svg)](https://github.com/tac0x2a/uchiumi)
+[![nayco](./doc/img/nayco.svg)](https://github.com/tac0x2a/nayco)
 
-Uchiumi(内湖) is an all in one micro Data Lake for IoT data.
+Nayco(内湖) is an all in one micro Data Lake for IoT data.
 
 # Setup
 WIP
@@ -10,7 +10,7 @@ WIP
 # Services
 
 ## [RabbitMQ](https://www.rabbitmq.com/)
-Message broker service. The MQTT port listen json format messages. Its general entry point of data stream to Uchiumi.
+Message broker service. The MQTT port listen json format messages. Its general entry point of data stream to Nayco.
 
 ### Ports
 + 15672: Web management console. Default account is `guest`:`guest`.
@@ -20,7 +20,7 @@ Message broker service. The MQTT port listen json format messages. Its general e
 Grebe is forwarder JSON message from RabbitMQ to Clickhouse.
 
 ## [ClickHouse](https://clickhouse.tech/)
-ClickHouse is a free analytics DBMS for big data. Central data storage of Uchiumi.
+ClickHouse is a free analytics DBMS for big data. Central data storage of Nayco.
 Default database is `default`, and user name and password is `default`.
 
 ### Ports
@@ -50,7 +50,7 @@ In first access, you need to register ClickHouse table as data source.
 Open source simple business intelligence application and sql editor tool for Clickhouse.
 
 + Name: any
-+ `http://host:port` : `http://<host-of-uchiumi-running>:8123`
++ `http://host:port` : `http://<host-of-nayco-running>:8123`
 + Login: `default`
 + Password: empty
 + (Experimental) HTTP Base auth: True
