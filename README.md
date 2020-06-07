@@ -4,11 +4,30 @@
 
 Nayco(内湖) is an all in one micro Data Lake for IoT data.
 
-# Setup
-WIP
+# How to deploy
+## Using docker stack (on Kubernetes)
++ start
+  ```sh
+  $ ./start-k8s.sh
+  ```
+
++ stop
+  ```sh
+  $ ./shutdown-k8s.sh
+  ```
+
+## Using docker-compose
++ start
+  ```sh
+  $ ./start-compose.sh
+  ```
+
++ stop
+  ```sh
+  $ ./shutdown-composes.sh
+  ```
 
 # Services
-
 ## [RabbitMQ](https://www.rabbitmq.com/)
 Message broker service. The MQTT port listen json format messages. Its general entry point of data stream to Nayco.
 

@@ -1,16 +1,12 @@
 version: "3"
 services:
   rabbitmq:
-    image: rabbitmq:3.8.2-alpine
+    image: localhost:5000/rabbitmq-nayco
     hostname: rabbitmq
     restart: always
     ports:
       - 15672:15672 # Web management console. Default account guest:guest
       - 1883:1883 # MQTT Port
-    volumes:
-      - ./rabbitmq/definitions.json:/opt/definitions.json:ro
-      - ./rabbitmq/rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro
-      - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
 
   # RabbitMQ to ClickHouse
   grebe:
@@ -22,8 +18,8 @@ services:
       - MQ_HOST=rabbitmq # RabbitMQ host
       - DB_HOST=clickhouse # Clickhouse host
     volumes:
-      - ./volume/grebe/logs:/logs
-      - ./volume/grebe/schemas:/schemas
+      - nayco-grebe-logs:/logs
+      - nayco-grebe-schemas:/schemas
 
   # Column-oriented DWH. db=default, user=default, pass=default
   clickhouse:
@@ -33,7 +29,7 @@ services:
     ports:
       - 8123:8123 # HTTP client port
     volumes:
-      - ./volume/clickhouse:/var/lib/clickhouse
+      - nayco-clickhouse:/var/lib/clickhouse
 
   # Portainer - Monitoring containers
   portainer: # admin - tryportainer
@@ -44,19 +40,17 @@ services:
       - 9000:9000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./volume/portainer/data:/data
+      - nayco-portainer-data:/data
 
   # Metabase visualize data on ClickHouse.
   metabase:
-    build:
-      context: metabase
-    image: metabase-clickhouse
+    image: localhost:5000/metabase-nayco
     hostname: metabase
     restart: always
     ports:
       - 3000:3000
     volumes:
-      - ./volume/metabase:/metabase-data
+      - nayco-metabase-data:/metabase-data
     environment:
       - MB_DB_FILE=/metabase-data/metabase.db
 
@@ -78,5 +72,13 @@ services:
     ports:
       - 1880:1880
     volumes:
-      - ./volume/nodered/data:/data
+      - nayco-nodered-data:/data
     user: root:root
+
+volumes:
+  nayco-grebe-logs:     {driver: local}
+  nayco-grebe-schemas:  {driver: local}
+  nayco-clickhouse:     {driver: local}
+  nayco-portainer-data: {driver: local}
+  nayco-metabase-data:  {driver: local}
+  nayco-nodered-data:   {driver: local}
