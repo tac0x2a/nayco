@@ -1,0 +1,12 @@
+version: "3"
+services:
+  # Metabase visualize data on ClickHouse.
+  metabase:
+    build:
+      context: metabase
+    image: metabase-nayco
+
+  rabbitmq:
+    build:
+      context: rabbitmq
+    image: rabbitmq-nayco
