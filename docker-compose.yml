@@ -10,7 +10,7 @@ services:
 
   # RabbitMQ to ClickHouse
   grebe:
-    image: tac0x2a/grebe:v0.3
+    image: tac0x2a/grebe:v1.0.3
     hostname: grebe
     restart: always
     environment:
@@ -23,7 +23,7 @@ services:
 
   # Column-oriented DWH. db=default, user=default, pass=default
   clickhouse:
-    image: yandex/clickhouse-server:20.1.6.3
+    image: yandex/clickhouse-server:20.5.2.7
     hostname: clickhouse
     restart: always
     ports:
@@ -33,7 +33,7 @@ services:
 
   # Portainer - Monitoring containers
   portainer: # admin - tryportainer
-    image: portainer/portainer:1.23.1
+    image: portainer/portainer:1.24.0
     hostname: portainer
     restart: always
     ports:
