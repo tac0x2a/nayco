@@ -10,7 +10,7 @@ services:
 
   # RabbitMQ to ClickHouse
   grebe:
-    image: tac0x2a/grebe:v0.3
+    image: tac0x2a/grebe:v1.0.3
     hostname: grebe
     restart: always
     environment:
@@ -18,29 +18,29 @@ services:
       - MQ_HOST=rabbitmq # RabbitMQ host
       - DB_HOST=clickhouse # Clickhouse host
     volumes:
-      - nayco-grebe-logs:/logs
-      - nayco-grebe-schemas:/schemas
+      - ./volume/grebe/logs:/logs
+      - ./volume/grebe/schemas:/schemas
 
   # Column-oriented DWH. db=default, user=default, pass=default
   clickhouse:
-    image: yandex/clickhouse-server:20.1.6.3
+    image: yandex/clickhouse-server:20.5.2.7
     hostname: clickhouse
     restart: always
     ports:
       - 8123:8123 # HTTP client port
     volumes:
-      - nayco-clickhouse:/var/lib/clickhouse
+      - ./volume/clickhouse:/var/lib/clickhouse
 
   # Portainer - Monitoring containers
   portainer: # admin - tryportainer
-    image: portainer/portainer:1.23.1
+    image: portainer/portainer:1.24.0
     hostname: portainer
     restart: always
     ports:
       - 9000:9000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - nayco-portainer-data:/data
+      - ./volume/portainer/data:/data
 
   # Metabase visualize data on ClickHouse.
   metabase:
@@ -50,7 +50,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - nayco-metabase-data:/metabase-data
+      - ./volume/metabase:/metabase-data
     environment:
       - MB_DB_FILE=/metabase-data/metabase.db
 
@@ -72,13 +72,5 @@ services:
     ports:
       - 1880:1880
     volumes:
-      - nayco-nodered-data:/data
+      - ./volume/nodered/data:/data
     user: root:root
-
-volumes:
-  nayco-grebe-logs:     {driver: local}
-  nayco-grebe-schemas:  {driver: local}
-  nayco-clickhouse:     {driver: local}
-  nayco-portainer-data: {driver: local}
-  nayco-metabase-data:  {driver: local}
-  nayco-nodered-data:   {driver: local}
