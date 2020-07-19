@@ -23,6 +23,15 @@ services:
       - ./volume/grebe/logs:/logs
       - ./volume/grebe/schemas:/schemas
 
+  # File storage to RabbitMQ
+  onamazu:
+    image: tac0x2a/o-namazu:v0.1.0
+    hostname: onamazu
+    restart: always
+    volumes:
+      - ./volume/onamazu/logs:/logs
+      - ./volume/storage_volume:/data:z
+
   # Column-oriented DWH. db=default, user=default, pass=default
   clickhouse:
     image: yandex/clickhouse-server:20.5.2.7
@@ -108,7 +117,7 @@ services:
     tty: true
     volumes:
       - ./volume/storage_volume:/mnt/storage:z
-    command: '-s "nayco;/mnt/storage;yes;no;no;nayco" -u "nayco;nayco" -p'
+    command: '-s "nayco;/mnt/storage;yes;no;no;nayco" -u "nayco;nayco" -p -g "hide dot files = no"'
     # -s "<name;/path>[;browse;readonly;guest;users;admins;writelist;comment]"
     # -p Set ownership and permissions on the shares
     # -u "<username;password>[;ID;group;GID]"
