@@ -1,7 +1,9 @@
 version: "3"
 services:
   rabbitmq:
-    image: localhost:5000/rabbitmq-nayco
+    image: rabbitmq-nayco
+    build:
+      context: rabbitmq
     hostname: rabbitmq
     restart: always
     ports:
@@ -37,14 +39,16 @@ services:
     hostname: portainer
     restart: always
     ports:
-      - 9000:9000
+      - 19000:9000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./volume/portainer/data:/data
 
   # Metabase visualize data on ClickHouse.
   metabase:
-    image: localhost:5000/metabase-nayco
+    image: metabase-nayco
+    build:
+      context: metabase
     hostname: metabase
     restart: always
     ports:
