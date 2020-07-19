@@ -23,6 +23,15 @@ services:
       - ./volume/grebe/logs:/logs
       - ./volume/grebe/schemas:/schemas
 
+  # File storage to RabbitMQ
+  onamazu:
+    image: tac0x2a/o-namazu:v0.1.0
+    hostname: onamazu
+    restart: always
+    volumes:
+      - ./volume/onamazu/logs:/logs
+      - ./volume/storage_volume:/data:z
+
   # Column-oriented DWH. db=default, user=default, pass=default
   clickhouse:
     image: yandex/clickhouse-server:20.5.2.7
@@ -78,3 +87,40 @@ services:
     volumes:
       - ./volume/nodered/data:/data
     user: root:root
+
+  # File Storage ----------------------------------------------------------------------------------
+
+  # Filebrowser
+  # admin:admin
+  filebrowser:
+    image: filebrowser/filebrowser:v2
+    hostname: filebrowser
+    restart: always
+    ports:
+      - "8082:80"
+    volumes:
+      - ./volume/storage_volume:/srv:z
+
+  samba: # nayco:nayco
+    image: dperson/samba:amd64
+    restart: always
+    hostname: samba
+    ports:
+      - "137:137/udp"
+      - "138:138/udp"
+      - "139:139/tcp"
+      - "445:445/tcp"
+    tmpfs:
+      - /tmp
+    read_only: false
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./volume/storage_volume:/mnt/storage:z
+    command: '-s "nayco;/mnt/storage;yes;no;no;nayco" -u "nayco;nayco" -p -g "hide dot files = no"'
+    # -s "<name;/path>[;browse;readonly;guest;users;admins;writelist;comment]"
+    # -p Set ownership and permissions on the shares
+    # -u "<username;password>[;ID;group;GID]"
+
+# volumes:
+#   storage_volume: {driver_opts:{ type: none, device: "${NAYCO_HOME}/volume/storage", o: bind }}
