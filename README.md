@@ -55,7 +55,7 @@ Default database is `default`, and user name and password is `default`.
 Portainer is a lightweight management UI. After login, please select `Local` and press `Connect` button.
 
 ### Ports
-+ 9000: Web interface.
++ 19000: Web interface.
 
 ## [Metabase](https://www.metabase.com/)
 Metabase visualize data on ClickHouse. It works with [metabase-clickhouse-driver](https://github.com/enqueue/metabase-clickhouse-driver).

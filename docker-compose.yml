@@ -107,8 +107,8 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - ./volume/storage_volume:/mnt:z
-    command: '-s "nayco;/mnt;yes;no;no;nayco" -u "nayco;nayco" -p'
+      - ./volume/storage_volume:/mnt/storage:z
+    command: '-s "nayco;/mnt/storage;yes;no;no;nayco" -u "nayco;nayco" -p'
     # -s "<name;/path>[;browse;readonly;guest;users;admins;writelist;comment]"
     # -p Set ownership and permissions on the shares
     # -u "<username;password>[;ID;group;GID]"
