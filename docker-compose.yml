@@ -78,3 +78,40 @@ services:
     volumes:
       - ./volume/nodered/data:/data
     user: root:root
+
+  # File Storage ----------------------------------------------------------------------------------
+
+  # Filebrowser
+  # admin:admin
+  filebrowser:
+    image: filebrowser/filebrowser:v2
+    hostname: filebrowser
+    restart: always
+    ports:
+      - "8082:80"
+    volumes:
+      - ./volume/storage_volume:/srv:z
+
+  samba: # nayco:nayco
+    image: dperson/samba:amd64
+    restart: always
+    hostname: samba
+    ports:
+      - "137:137/udp"
+      - "138:138/udp"
+      - "139:139/tcp"
+      - "445:445/tcp"
+    tmpfs:
+      - /tmp
+    read_only: false
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./volume/storage_volume:/mnt:z
+    command: '-s "nayco;/mnt;yes;no;no;nayco" -u "nayco;nayco" -p'
+    # -s "<name;/path>[;browse;readonly;guest;users;admins;writelist;comment]"
+    # -p Set ownership and permissions on the shares
+    # -u "<username;password>[;ID;group;GID]"
+
+# volumes:
+#   storage_volume: {driver_opts:{ type: none, device: "${NAYCO_HOME}/volume/storage", o: bind }}

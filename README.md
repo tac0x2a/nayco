@@ -5,6 +5,12 @@
 Nayco(内湖) is an all in one micro Data Lake for IoT data.
 
 # How to deploy
+## Initialize
+```sh
+$ chmod +x init.sh
+$ ./init.sh
+```
+
 ## Using docker stack (on Kubernetes)
 + start
   ```sh
@@ -83,3 +89,23 @@ Node-RED is a programming tool for wiring together hardware devices, APIs and on
 
 ### Ports
 + 1880: Web interface.
+
+
+## [Filebrowser](https://filebrowser.org/)
+> File Browser is a create-your-own-cloud-kind of software where you can install it on a server, direct it to a path and then access your files through a nice web interface.
+
++ Host: `filebrowser`
++ Port: `8082`
++ User: `admin`
++ Pass: `admin`
+
+### Ports
++ 8082: Web interface.
+
+## [Samba](https://github.com/dperson/samba)
+> Samba docker container
+Pleaase see https://github.com/dperson/samba
+
+
+
+
