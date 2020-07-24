@@ -5,33 +5,15 @@
 Nayco(内湖) is an all in one micro Data Lake for IoT data.
 
 # How to deploy
-## Initialize
+## Deploy
 ```sh
-$ chmod +x init.sh
-$ ./init.sh
+$ docker-compose up -d
 ```
 
-## Using docker stack (on Kubernetes)
-+ start
-  ```sh
-  $ ./start-k8s.sh
-  ```
-
-+ stop
-  ```sh
-  $ ./shutdown-k8s.sh
-  ```
-
-## Using docker-compose
-+ start
-  ```sh
-  $ ./start-compose.sh
-  ```
-
-+ stop
-  ```sh
-  $ ./shutdown-composes.sh
-  ```
+## Shutdown
+```sh
+$ docker-compose down
+```
 
 # Services
 ## [RabbitMQ](https://www.rabbitmq.com/)
@@ -105,7 +87,3 @@ Node-RED is a programming tool for wiring together hardware devices, APIs and on
 ## [Samba](https://github.com/dperson/samba)
 > Samba docker container
 Pleaase see https://github.com/dperson/samba
-
-
-
-
