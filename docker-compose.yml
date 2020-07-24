@@ -12,7 +12,7 @@ services:
 
   # RabbitMQ to ClickHouse
   grebe:
-    image: tac0x2a/grebe:v1.0.3
+    image: tac0x2a/grebe:latest
     hostname: grebe
     restart: always
     environment:
@@ -25,7 +25,7 @@ services:
 
   # File storage to RabbitMQ
   onamazu:
-    image: tac0x2a/o-namazu:v0.1.0
+    image: tac0x2a/o-namazu:latest
     hostname: onamazu
     restart: always
     volumes:
