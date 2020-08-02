@@ -2,7 +2,10 @@
 
 [![nayco](./doc/img/nayco.svg)](https://github.com/tac0x2a/nayco)
 
-Nayco(内湖) is an all in one micro Data Lake for IoT data.
+Nayco(内湖) is an all in one micro Data Lake for IoT like data.
+
+# Overview
+![overview](./doc/img/overview.drawio.svg)
 
 # How to deploy
 ## Deploy
@@ -14,6 +17,12 @@ $ docker-compose up -d
 ```sh
 $ docker-compose down
 ```
+
+## Backup
+```sh
+$ ./backup.sh
+```
+
 
 # Services
 ## [RabbitMQ](https://www.rabbitmq.com/)
