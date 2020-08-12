@@ -13,16 +13,19 @@
         ></v-text-field>
       </v-card-title>
 
-      <v-data-table
-        v-if="tables"
-        :headers="headers"
-        :items="tables"
-        :search="search" />
+      <v-data-table v-if="tables" :headers="headers" :items="tables" :search="search" no-data-text="Data not found...">
+        <template v-slot:[`item.name`]="{item}">
+          <router-link :to="{ name: 'TableName', params: { tableName: item.name }}">{{ item.name }}</router-link>
+        </template>
+      </v-data-table>
+
       <v-data-table
         v-else
         hide-default-header
         hide-default-footer
-        loading loading-text="Loading... Please wait" />
+        loading
+        loading-text="Loading... Please wait"
+      />
     </v-card>
   </div>
 </template>
@@ -44,7 +47,7 @@ export default {
     // tables: null,
     search: ''
   }),
-  mounted () {
+  mounted() {
     Clickhouse.listTables(res => {
       this.tables = res
     })
