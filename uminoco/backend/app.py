@@ -35,5 +35,14 @@ def show_tables():
     return json.dumps(res_map_list)  # json.dumps(res)
 
 
+@app.route('/api/v1/disk_usage')
+def show_host_info():
+    keys = ['db_name', 'free_space', 'total_spaces']
+    query = "SELECT name db_name, free_space, total_space FROM system.disks"
+    res = client.execute(query)
+
+    response = {k: v for k, v in zip(keys, res[0])}
+    return json.dumps(response)
+
 if __name__ == '__main__':
     app.run()
