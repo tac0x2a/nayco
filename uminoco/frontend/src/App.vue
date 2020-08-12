@@ -2,7 +2,8 @@
   <v-app id="App">
     <v-navigation-drawer v-model="drawer" app>
       <v-list dense>
-        <v-list-item link>
+
+        <v-list-item to="/">
           <v-list-item-action>
             <v-icon>mdi-home</v-icon>
           </v-list-item-action>
@@ -10,44 +11,59 @@
             <v-list-item-title>Home</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item link>
+
+        <v-list-item to="/table">
           <v-list-item-action>
-            <v-icon>mdi-email</v-icon>
+            <v-icon>mdi-home</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Contact</v-list-item-title>
+            <v-list-item-title>nayco Tables</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+
+        <v-divider inset></v-divider>
+
+        <v-list-item to="/develop">
+          <v-list-item-action>
+            <v-icon>mdi-home</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Develop</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
       </v-list>
     </v-navigation-drawer>
 
     <v-app-bar app color="indigo" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Application</v-toolbar-title>
+      <v-toolbar-title>Uminoco</v-toolbar-title>
     </v-app-bar>
 
     <v-main>
-      <HelloWorld />
+      <router-view />
     </v-main>
 
     <v-footer color="indigo" app>
-      <span class="white--text">&copy; {{ new Date().getFullYear() }}</span>
+      <span class="white--text"> tac0x2a &copy; {{ new Date().getFullYear() }} </span>
     </v-footer>
+
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
 
 export default {
   name: 'App',
 
-  components: {
-    HelloWorld
+  components: {},
+
+  props: {
+    source: String
   },
 
   data: () => ({
-    //
+    drawer: null
   })
 }
 </script>
