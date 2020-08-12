@@ -2,7 +2,7 @@ import os
 import json
 from clickhouse_driver import Client
 
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 
 app = Flask(__name__, static_folder='../frontend/dist/static', template_folder='../frontend/dist')
 
@@ -21,19 +21,42 @@ def index(path):
 
 
 # -------------- API --------------
-@app.route('/api/v1/table')
+@app.route('/api/v1/table/')
 def show_tables():
     keys = ['name', 'engine', 'total_rows', 'total_bytes']
-    query = f"SELECT {', '.join(keys)} FROM system.tables WHERE database = '{DB_NAME}' AND primary_key = '__create_at'"
-    res = client.execute(query)
+    query = f"SELECT {', '.join(keys)} FROM system.tables WHERE database = %(db_name)s AND primary_key = '__create_at'"
+    res = client.execute(query, {'db_name': str(DB_NAME)})
 
     res_map_list = []
     for r in res:
         table = {k: v for k, v in zip(keys, list(r))}
         res_map_list.append(table)
 
-    return json.dumps(res_map_list)  # json.dumps(res)
+    return json.dumps(res_map_list), 200  # json.dumps(res)
 
+
+@app.route('/api/v1/table/<table_name>')
+def show_table(table_name=None):
+    summary_keys = ['name', 'engine', 'total_rows', 'total_bytes']
+    summary_query = f"SELECT {', '.join(summary_keys)} FROM system.tables WHERE name = %(table_name)s"
+    summary_res = client.execute(summary_query, {"table_name": table_name})
+
+    if len(summary_res) <= 0:
+        return jsonify([]), 400
+
+    response = {k: v for k, v in zip(summary_keys, summary_res[0])}
+
+    column_keys = ["name", "type", "position", "data_compressed_bytes", "data_uncompressed_bytes", "marks_bytes", "compression_ratio"]
+    column_query = "SELECT name, type, position, data_compressed_bytes, data_uncompressed_bytes, marks_bytes, ((marks_bytes + data_compressed_bytes) / data_uncompressed_bytes * 100) compression_ratio, comment FROM system.columns WHERE table = %(table_name)s"
+    column_res = client.execute(column_query, {"table_name": table_name})
+
+    column_response = []
+    for row in column_res:
+        column_response.append({k: v for k, v in zip(column_keys, row)})
+
+    response["columns"] = column_response
+
+    return jsonify(response), 200
 
 @app.route('/api/v1/disk_usage')
 def show_host_info():
@@ -42,7 +65,8 @@ def show_host_info():
     res = client.execute(query)
 
     response = {k: v for k, v in zip(keys, res[0])}
-    return json.dumps(response)
+    return jsonify(response), 200
+
 
 if __name__ == '__main__':
     app.run()
