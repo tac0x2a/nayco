@@ -1,3 +1,5 @@
-// module.exports = {
-//   assetsDir: 'static',
-// };
+module.exports = {
+  transpileDependencies: [
+    'vuetify'
+  ]
+}

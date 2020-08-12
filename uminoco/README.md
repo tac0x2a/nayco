@@ -2,7 +2,7 @@
 
 Uminoco is an discovery ship on the data lake. It will work with [nayco](https://github.com/tac0x2a/nayco).
 
-## In Development
+## For Development
 
 ```sh
 $ docker-compose up
