@@ -42,10 +42,11 @@ def show_table(table_name=None):
     summary_res = client.execute(summary_query, {"table_name": table_name})
 
     if len(summary_res) <= 0:
-        return jsonify([]), 400
+        return jsonify([]), 404
 
     response = {k: v for k, v in zip(summary_keys, summary_res[0])}
 
+    # Columns
     column_keys = ["name", "type", "position", "data_compressed_bytes", "data_uncompressed_bytes", "marks_bytes", "comment"]
     column_query = "SELECT name, type, position, data_compressed_bytes, data_uncompressed_bytes, marks_bytes, comment FROM system.columns WHERE table = %(table_name)s"
     column_res = client.execute(column_query, {"table_name": table_name})
@@ -76,7 +77,7 @@ def show_table(table_name=None):
         schema_keys = ["__create_at", "source_id", "schema", "table_name"]
         schema_query = f"SELECT {', '.join(schema_keys)} FROM schema_table where table_name = %(table_name)s"
         schema_res = client.execute(schema_query, {"table_name": table_name})
-        response["grebe_schema"] = {k: v for k, v in zip(schema_keys, schema_res)}
+        response["grebe_schema"] = {k: v for k, v in zip(schema_keys, schema_res[0])}
     except Exception:
         pass
 
