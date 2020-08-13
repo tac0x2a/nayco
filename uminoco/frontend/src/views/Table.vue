@@ -63,12 +63,12 @@
 
     </div>
     <div v-else>
-      <v-progress-circular
-            :size="120"
-            :width="7"
-            color="indigo"
-            indeterminate
-          ></v-progress-circular>
+      <v-data-table
+        hide-default-header
+        hide-default-footer
+        loading
+        loading-text="Loading... Please wait"
+      />
     </div>
   </div>
 </template>
@@ -91,9 +91,9 @@ export default {
       { text: 'Name', sortable: true, value: 'name' },
       { text: 'Type', sortable: true, value: 'type' },
       { text: 'Size [KB]', sortable: true, value: 'data_compressed_bytes' },
-      { text: 'Original Size [KB]', sortable: true, value: 'data_uncompressed_bytes' },
       { text: 'Compression Ratio', sortable: true, value: 'compression_ratio' },
       { text: 'Marks Size [KB]', sortable: true, value: 'marks_bytes' },
+      { text: 'Original Size [KB]', sortable: true, value: 'data_uncompressed_bytes' },
       { text: 'Position', sortable: true, value: 'position' }
     ]
   }),

@@ -23,6 +23,9 @@
         <template v-slot:[`item.name`]="{item}" >
           <router-link :to="{ name: 'Table', params: { tableName: item.name }}">{{ item.name }}</router-link>
         </template>
+        <template v-slot:[`item.total_bytes`]="{item}" >
+          {{(item.total_bytes / 1024 / 1024).toFixed(3)}} MB
+        </template>
       </v-data-table>
 
       <v-data-table
