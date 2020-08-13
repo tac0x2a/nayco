@@ -82,13 +82,41 @@
         <v-row>
           <v-col class="text-center" cols="12" sm="6"></v-col> <!-- dummy -->
           <v-col class="text-center" cols="12" sm="3">
-            <v-btn color="error" >Rename Table</v-btn>
+            <v-btn color="error" @click="renameDialog = true">Rename Table</v-btn>
           </v-col>
           <v-col class="text-center" cols="12" sm="3">
             <v-btn color="error" >Delete Table</v-btn>
           </v-col>
         </v-row>
       </v-container>
+
+      <v-dialog v-model="renameDialog" max-width="500px">
+
+        <v-card>
+          <v-toolbar flat color="yellow">
+            <v-icon>mdi-table-large</v-icon>
+            <v-toolbar-title class="pa-2">Rename Table</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn color="yellow darken-3" fab small @click="isReanmeEditable = !isReanmeEditable">
+              <v-icon v-if="isReanmeEditable">mdi-lock-open-variant</v-icon>
+              <v-icon v-else>mdi-lock</v-icon>
+            </v-btn>
+          </v-toolbar>
+
+          <v-card-title>Are you sure that rename the table name ?</v-card-title>
+          <v-card-text>
+            <v-text-field :disabled="!isReanmeEditable" color="black" label="New Table Name" :placeholder="this.tableName"></v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" text @click="isReanmeEditable = renameDialog = false">
+              Rename
+            </v-btn>
+            <v-btn color="primary" text @click="isReanmeEditable = renameDialog = false">
+              Cancel
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
     </div>
 
@@ -107,8 +135,6 @@
 import Clickhouse from '@/api/clickhouse.js'
 
 export default {
-
-  name: 'Table',
   components: {},
   data: () => ({
     breadcrumbs: [
@@ -126,7 +152,9 @@ export default {
       { text: 'Marks Size [KB]', sortable: true, value: 'marks_bytes' },
       { text: 'Original Size [KB]', sortable: true, value: 'data_uncompressed_bytes' },
       { text: 'Position', sortable: true, value: 'position' }
-    ]
+    ],
+    renameDialog: false,
+    isReanmeEditable: false
   }),
 
   computed: {
