@@ -6,36 +6,38 @@
       </template>
     </v-breadcrumbs>
 
-    <v-card>
-      <v-card-title>
-        Tables
-        <v-spacer></v-spacer>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
-      </v-card-title>
+    <v-container>
+      <v-card>
+        <v-card-title>
+          Tables
+          <v-spacer></v-spacer>
+          <v-text-field
+            v-model="search"
+            append-icon="mdi-magnify"
+            label="Search"
+            single-line
+            hide-details
+          ></v-text-field>
+        </v-card-title>
 
-      <v-data-table v-if="tables" :headers="headers" :items="tables" :search="search" no-data-text="Data not found...">
-        <template v-slot:[`item.name`]="{item}" >
-          <router-link :to="{ name: 'Table', params: { tableName: item.name }}">{{ item.name }}</router-link>
-        </template>
-        <template v-slot:[`item.total_bytes`]="{item}" >
-          {{(item.total_bytes / 1024 / 1024).toFixed(3)}} MB
-        </template>
-      </v-data-table>
+        <v-data-table v-if="tables" disable-pagination hide-default-footer :headers="headers" :items="tables" :search="search" no-data-text="Data not found...">
+          <template v-slot:[`item.name`]="{item}" >
+            <router-link :to="{ name: 'Table', params: { tableName: item.name }}">{{ item.name }}</router-link>
+          </template>
+          <template v-slot:[`item.total_bytes`]="{item}" >
+            {{(item.total_bytes / 1024 / 1024).toFixed(3)}} MB
+          </template>
+        </v-data-table>
 
-      <v-data-table
-        v-else
-        hide-default-header
-        hide-default-footer
-        loading
-        loading-text="Loading... Please wait"
-      />
-    </v-card>
+        <v-data-table
+          v-else
+          hide-default-header
+          hide-default-footer
+          loading
+          loading-text="Loading... Please wait"
+        />
+      </v-card>
+    </v-container>
   </div>
 </template>
 

@@ -6,38 +6,45 @@
       </template>
     </v-breadcrumbs>
 
+    <!-- Error -->
     <div v-if="failer">
-      <v-card class="mx-auto" max-width="auto" outlined tile>
-        <v-card-text>
-          <p class="display-1 text--primary">{{failer}}</p>
-        </v-card-text>
-      </v-card>
+      <v-container>
+        <v-card class="mx-auto" max-width="auto" tile>
+          <v-card-text>
+            <p class="display-1 text--primary">{{failer}}</p>
+          </v-card-text>
+        </v-card>
+      </v-container>
     </div>
 
+    <!-- content  -->
     <div v-else-if="tableData">
-      <v-card class="mx-auto" max-width="auto" outlined tile>
+      <v-container>
+      <v-card class="mx-auto"  tile>
         <v-card-text>
           <div>Table</div>
           <p class="display-1 text--primary">{{tableData.name}}</p>
           <div v-if="this.tableCreated" >Created at: {{this.tableCreated}} </div>
         </v-card-text>
       </v-card>
+      </v-container>
 
-      <v-container class="grey lighten-3">
+      <v-container>
         <v-row no-gutters>
           <v-col key="1" cols="12" sm="4">
-            <v-card class="pa-2" outlined tile><v-card-text><div>Rows</div><p class="headline mb-1">{{tableData.total_rows}}</p></v-card-text></v-card>
+            <v-card class="pa-2" tile><v-card-text><div>Rows</div><p class="headline mb-1">{{tableData.total_rows}}</p></v-card-text></v-card>
           </v-col>
           <v-col key="2" cols="12" sm="4">
-            <v-card class="pa-2" outlined tile><v-card-text><div>Bytes[MB]</div><p class="headline mb-1">{{(tableData.total_bytes/1024.0/1024.0).toFixed(4)}}</p></v-card-text></v-card>
+            <v-card class="pa-2" tile><v-card-text><div>Bytes[MB]</div><p class="headline mb-1">{{(tableData.total_bytes/1024.0/1024.0).toFixed(4)}}</p></v-card-text></v-card>
           </v-col>
           <v-col key="3" cols="12" sm="4">
-            <v-card class="pa-2" outlined tile><v-card-text><div>Compression Ratio</div><div class="headline mb-1">{{(tableData.compression_ratio * 100).toFixed(2)}} %</div></v-card-text></v-card>
+            <v-card class="pa-2" tile><v-card-text><div>Compression Ratio</div><div class="headline mb-1">{{(tableData.compression_ratio * 100).toFixed(2)}} %</div></v-card-text></v-card>
           </v-col>
         </v-row>
       </v-container>
 
-      <div>
+      <!-- Data table -->
+      <v-container>
         <v-card>
           <v-card-title>
             Columns
@@ -51,7 +58,7 @@
             ></v-text-field>
           </v-card-title>
 
-          <v-data-table dense disable-pagination hide-default-footer :headers="columnsHeader" :items="tableData.columns" :search="search" no-data-text="Data not found...">
+          <v-data-table class='pa-2'  dense disable-pagination hide-default-footer :headers="columnsHeader" :items="tableData.columns" :search="search" no-data-text="Data not found...">
             <template v-slot:[`item.compression_ratio`]="{item}" >
               {{(item.compression_ratio * 100).toFixed(2)}} %
             </template>
@@ -68,10 +75,24 @@
 
           </v-data-table>
         </v-card>
-      </div>
+      </v-container>
+
+      <!-- Buttons -->
+      <v-container>
+        <v-row>
+          <v-col class="text-center" cols="12" sm="6"></v-col> <!-- dummy -->
+          <v-col class="text-center" cols="12" sm="3">
+            <v-btn color="error" >Rename Table</v-btn>
+          </v-col>
+          <v-col class="text-center" cols="12" sm="3">
+            <v-btn color="error" >Delete Table</v-btn>
+          </v-col>
+        </v-row>
+      </v-container>
 
     </div>
-    <div v-else>
+
+    <div v-else> <!-- tableData is null -->
       <v-data-table
         hide-default-header
         hide-default-footer
@@ -110,7 +131,9 @@ export default {
 
   computed: {
     tableCreated() {
-      return new Date(this.tableData?.grebe_schema?.__create_at).toLocaleString()
+      const createAt = this.tableData?.grebe_schema?.__create_at
+      if (!createAt) return null
+      return new Date(createAt).toLocaleString()
     }
   },
   props: ['tableName'],
