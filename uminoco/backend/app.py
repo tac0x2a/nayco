@@ -94,7 +94,30 @@ def rename_table(src_table_name=None):
     if new_table_name == src_table_name:
         return jsonify({"message": "Current and new table name are same"}), 400
 
-    return jsonify({"current": src_table_name, "new": new_table_name}), 200
+
+    rename_query = f"RENAME TABLE `{src_table_name}` TO `{new_table_name}`"
+    update_schema_query = "ALTER TABLE schema_table UPDATE table_name = %(new)s WHERE table_name = %(src)s"
+
+    # Try to rename table
+    try:
+        client.execute(rename_query)
+    except Exception as ex:
+        return jsonify({"message": f"Failed in execution rename query: {ex}"}), 500
+
+    # Try to rename table
+    try:
+        client.execute(update_schema_query, {"src": src_table_name, "new": new_table_name})
+    except Exception as ex:
+
+        try:
+            restore_query = f"RENAME TABLE `{new_table_name}` TO `{src_table_name}`"
+            client.execute(restore_query)
+        except Exception as ex_restore:
+            return jsonify({"message": f"Failed in execution rename query: {ex}, And restore failed.. :{ex_restore}. Please fix DB manually.."}), 500
+
+        return jsonify({"message": f"Failed in execution update query: {ex}. Table name is restored to {src_table_name}"}), 500
+
+    return jsonify({"message": "ok"}), 200
 
 
 

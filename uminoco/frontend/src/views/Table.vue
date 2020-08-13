@@ -119,10 +119,10 @@
 
           <v-card-title>Are you sure that rename the table name ?</v-card-title>
           <v-card-text>
-            <v-text-field v-model="renameNewTableName" :disabled="!isReanmeEditable" color="black" label="New Table Name" :placeholder="this.tableName"></v-text-field>
+            <v-text-field v-model="renameNewTableName" :disabled="!isReanmeEditable" color="black" label="New Table Name" :placeholder="tableName"></v-text-field>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="warning" @click="postRename(tableName, renameNewTableName)">
+            <v-btn color="warning" :disabled="!isReanmeEditable || !renameNewTableName" @click="postRename(tableName, renameNewTableName)">
               RENAME
             </v-btn>
             <v-btn color="primary" text @click="isReanmeEditable = renameDialog = false">
