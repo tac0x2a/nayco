@@ -17,7 +17,7 @@
             <v-icon>mdi-home</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>nayco Tables</v-list-item-title>
+            <v-list-item-title>Tables</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
@@ -37,7 +37,7 @@
 
     <v-app-bar app color="indigo" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Uminoco</v-toolbar-title>
+      <v-toolbar-title>Nayco</v-toolbar-title>
     </v-app-bar>
 
     <v-main>

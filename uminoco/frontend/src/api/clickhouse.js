@@ -6,5 +6,10 @@ export default {
     axios.get('/api/v1/table/').then((res) => {
       callback(res.data)
     })
+  },
+  tableDetail (tableName, callback) {
+    axios.get('/api/v1/table/' + tableName).then((res) => {
+      callback(res.data)
+    })
   }
 }
