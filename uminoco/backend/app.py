@@ -46,17 +46,33 @@ def show_table(table_name=None):
 
     response = {k: v for k, v in zip(summary_keys, summary_res[0])}
 
-    column_keys = ["name", "type", "position", "data_compressed_bytes", "data_uncompressed_bytes", "marks_bytes", "compression_ratio"]
-    column_query = "SELECT name, type, position, data_compressed_bytes, data_uncompressed_bytes, marks_bytes, ((marks_bytes + data_compressed_bytes) / data_uncompressed_bytes * 100) compression_ratio, comment FROM system.columns WHERE table = %(table_name)s"
+    column_keys = ["name", "type", "position", "data_compressed_bytes", "data_uncompressed_bytes", "marks_bytes", "comment"]
+    column_query = "SELECT name, type, position, data_compressed_bytes, data_uncompressed_bytes, marks_bytes, comment FROM system.columns WHERE table = %(table_name)s"
     column_res = client.execute(column_query, {"table_name": table_name})
 
     column_response = []
     for row in column_res:
-        column_response.append({k: v for k, v in zip(column_keys, row)})
+        col = {k: v for k, v in zip(column_keys, row)}
+
+        col['compression_ratio'] = 0
+        if col['data_uncompressed_bytes'] > 0:
+            col['compression_ratio'] = (col['data_compressed_bytes'] + col['marks_bytes']) / col['data_uncompressed_bytes']
+
+        column_response.append(col)
+
+    # Total compression ratio
+    response['compression_ratio'] = 0
+    total_data_compressed = sum([r['data_compressed_bytes'] for r in column_response])
+    total_data_marks = sum([r['marks_bytes'] for r in column_response])
+    total_data_uncompressed = sum([r['data_uncompressed_bytes'] for r in column_response])
+
+    if total_data_uncompressed > 0:
+        response['compression_ratio'] = (total_data_marks + total_data_compressed) / total_data_uncompressed
 
     response["columns"] = column_response
 
     return jsonify(response), 200
+
 
 @app.route('/api/v1/disk_usage')
 def show_host_info():
