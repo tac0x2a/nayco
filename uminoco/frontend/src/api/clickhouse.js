@@ -15,11 +15,20 @@ export default {
       errorCallback(err)
     })
   },
+
   renameTable (currentTableName, newTableName, callback, errorCallback) {
     const param = new FormData()
     param.set('new_table_name', newTableName)
 
     axios.post('/api/v1/table/' + currentTableName + '/' + 'rename', param).then((res) => {
+      callback(res.data)
+    }).catch((err) => {
+      errorCallback(err)
+    })
+  },
+
+  dropTable (tableName, callback, errorCallback) {
+    axios.post('/api/v1/table/' + tableName + '/' + 'drop').then((res) => {
       callback(res.data)
     }).catch((err) => {
       errorCallback(err)

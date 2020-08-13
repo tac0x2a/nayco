@@ -96,10 +96,10 @@
         <v-row>
           <v-col class="text-center" cols="12" sm="6"></v-col> <!-- dummy -->
           <v-col class="text-center" cols="12" sm="3">
-            <v-btn color="warning" @click="renameDialog = true; isReanmeEditable = false; renameNewTableName = ''">Rename Table</v-btn>
+            <v-btn color="warning" @click="renameDialog = true; isDialogEditable = false; renameNewTableName = ''">Rename Table</v-btn>
           </v-col>
           <v-col class="text-center" cols="12" sm="3">
-            <v-btn color="error" >Delete Table</v-btn>
+            <v-btn color="error" @click="deleteDialog = true; isDialogEditable = false; deleteTableName = ''">Delete Table</v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -111,21 +111,50 @@
             <v-icon>mdi-table-large</v-icon>
             <v-toolbar-title class="pa-2">Rename Table</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn color="warning darken-1" fab small @click="isReanmeEditable = !isReanmeEditable">
-              <v-icon v-if="isReanmeEditable">mdi-lock-open-variant</v-icon>
+            <v-btn color="warning darken-1" fab small @click="isDialogEditable = !isDialogEditable">
+              <v-icon v-if="isDialogEditable">mdi-lock-open-variant</v-icon>
               <v-icon v-else>mdi-lock</v-icon>
             </v-btn>
           </v-toolbar>
 
           <v-card-title>Are you sure that rename the table name ?</v-card-title>
           <v-card-text>
-            <v-text-field v-model="renameNewTableName" :disabled="!isReanmeEditable" color="black" label="New Table Name" :placeholder="tableName"></v-text-field>
+            <v-text-field v-model="renameNewTableName" :disabled="!isDialogEditable" color="black" label="New Table Name" :placeholder="tableName"></v-text-field>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="warning" :disabled="!isReanmeEditable || !renameNewTableName" @click="postRename(tableName, renameNewTableName)">
+            <v-btn color="warning" :disabled="!isDialogEditable || !renameNewTableName" @click="postRename(tableName, renameNewTableName)">
               RENAME
             </v-btn>
-            <v-btn color="primary" text @click="isReanmeEditable = renameDialog = false">
+            <v-btn color="primary" text @click="isDialogEditable = renameDialog = false">
+              Cancel
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Delete Dialog -->
+      <v-dialog v-model="deleteDialog" max-width="500px">
+        <v-card>
+          <v-toolbar flat color="error">
+            <v-icon>mdi-table-large</v-icon>
+            <v-toolbar-title class="pa-2">Delete Table</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn color="error darken-1" fab small @click="isDialogEditable = !isDialogEditable">
+              <v-icon v-if="isDialogEditable">mdi-lock-open-variant</v-icon>
+              <v-icon v-else>mdi-lock</v-icon>
+            </v-btn>
+          </v-toolbar>
+
+          <v-card-title>Are you sure that Delete(Drop) the table name ?</v-card-title>
+          <v-card-text>
+            Please re-type this table name '{{this.tableName}}'
+            <v-text-field v-model="deleteTableName" :disabled="!isDialogEditable" color="black" label="Table Name" :placeholder="tableName"></v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="error" :disabled="!isDialogEditable || deleteTableName != tableName" @click="postDeleteTable(deleteTableName)">
+              Delete(DROP)
+            </v-btn>
+            <v-btn color="primary" text @click="isDialogEditable = deleteDialog = false">
               Cancel
             </v-btn>
           </v-card-actions>
@@ -174,8 +203,12 @@ export default {
     alert: false,
     alertTitle: '',
     alertMessage: '',
+    isDialogEditable: false,
+
+    deleteDialog: false,
+    deleteTableName: '',
+
     renameDialog: false,
-    isReanmeEditable: false,
     renameNewTableName: ''
   }),
 
@@ -207,13 +240,25 @@ export default {
 
   methods: {
     postRename(currentTableName, newTableName) {
-      this.isReanmeEditable = this.renameDialog = false
+      this.isDialogEditable = this.renameDialog = false
 
       Clickhouse.renameTable(currentTableName, newTableName, res => {
         this.$router.push({ name: 'Table', params: { tableName: newTableName } })
       },
       err => {
         this.alertTitle = 'Faild to rename table...'
+        this.alertMessage = err?.response?.data?.message
+        this.alert = true
+      })
+    },
+    postDeleteTable(tableName) {
+      this.isDialogEditable = this.renameDialog = false
+
+      Clickhouse.dropTable(tableName, res => {
+        this.$router.push({ name: 'Tables' })
+      },
+      err => {
+        this.alertTitle = 'Faild to delete table...'
         this.alertMessage = err?.response?.data?.message
         this.alert = true
       })

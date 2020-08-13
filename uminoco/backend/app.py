@@ -94,7 +94,6 @@ def rename_table(src_table_name=None):
     if new_table_name == src_table_name:
         return jsonify({"message": "Current and new table name are same"}), 400
 
-
     rename_query = f"RENAME TABLE `{src_table_name}` TO `{new_table_name}`"
     update_schema_query = "ALTER TABLE schema_table UPDATE table_name = %(new)s WHERE table_name = %(src)s"
 
@@ -116,6 +115,29 @@ def rename_table(src_table_name=None):
             return jsonify({"message": f"Failed in execution rename query: {ex}, And restore failed.. :{ex_restore}. Please fix DB manually.."}), 500
 
         return jsonify({"message": f"Failed in execution update query: {ex}. Table name is restored to {src_table_name}"}), 500
+
+    return jsonify({"message": "ok"}), 200
+
+
+@app.route('/api/v1/table/<table_name>/drop', methods=["POST"])
+def drop_table(table_name=None):
+
+    if table_name is None:
+        return jsonify({"message": "Table name is not provided."}), 400
+
+    # Try to drop table
+    try:
+        drop_query = f"DROP TABLE `{table_name}`"
+        client.execute(drop_query)
+    except Exception as ex:
+        return jsonify({"message": f"Failed in execution drop query: {ex}"}), 500
+
+    # Try to delete on schema table
+    try:
+        delete_schema_query = "ALTER TABLE schema_table DELETE WHERE table_name = %(table_name)s"
+        client.execute(delete_schema_query, {"table_name": table_name})
+    except Exception as ex:
+        return jsonify({"message": f"Failed in execution delete schema query: {ex}"}), 500
 
     return jsonify({"message": "ok"}), 200
 
