@@ -12,20 +12,21 @@ services:
 
   # RabbitMQ to ClickHouse
   grebe:
-    image: tac0x2a/grebe:latest
+    image: tac0x2a/grebe:v1.1.0
     hostname: grebe
     restart: always
     environment:
       - MQ_QNAME=nayco # Queue name to subscribe on RabbitMQ
       - MQ_HOST=rabbitmq # RabbitMQ host
       - DB_HOST=clickhouse # Clickhouse host
+      - SCHEMA_STORE=rdb # Schema on Clickhouse
     volumes:
       - ./volume/grebe/logs:/logs
       - ./volume/grebe/schemas:/schemas
 
   # File storage to RabbitMQ
   onamazu:
-    image: tac0x2a/o-namazu:latest
+    image: tac0x2a/o-namazu:v0.2.0
     hostname: onamazu
     restart: always
     volumes:
