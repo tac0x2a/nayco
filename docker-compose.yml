@@ -19,6 +19,7 @@ services:
       - MQ_QNAME=nayco # Queue name to subscribe on RabbitMQ
       - MQ_HOST=rabbitmq # RabbitMQ host
       - DB_HOST=clickhouse # Clickhouse host
+      - SCHEMA_STORE=rdb # Schema on Clickhouse
     volumes:
       - ./volume/grebe/logs:/logs
       - ./volume/grebe/schemas:/schemas
