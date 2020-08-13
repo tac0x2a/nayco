@@ -21,17 +21,6 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-divider inset></v-divider>
-
-        <v-list-item to="/develop">
-          <v-list-item-action>
-            <v-icon>mdi-code-braces</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Develop</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-
       </v-list>
     </v-navigation-drawer>
 

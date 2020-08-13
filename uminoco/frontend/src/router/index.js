@@ -3,15 +3,13 @@ import VueRouter from 'vue-router'
 import Home from '@/views/Home.vue'
 import Tables from '@/views/Tables.vue'
 import Table from '@/views/Table.vue'
-import Develop from '@/views/Develop.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
   { path: '/table', name: 'Tables', component: Tables },
-  { path: '/table/:tableName', name: 'Table', component: Table, props: (route) => ({ tableName: route.params.tableName }) },
-  { path: '/develop', name: 'Develop', component: Develop }
+  { path: '/table/:tableName', name: 'Table', component: Table, props: (route) => ({ tableName: route.params.tableName }) }
 ]
 
 const router = new VueRouter({
