@@ -11,6 +11,7 @@
         <v-card-text>
           <div>Table</div>
           <p class="display-1 text--primary">{{tableData.name}}</p>
+          <div v-if="this.tableCreated" >Created at: {{this.tableCreated}} </div>
         </v-card-text>
       </v-card>
 
@@ -97,12 +98,17 @@ export default {
       { text: 'Position', sortable: true, value: 'position' }
     ]
   }),
+
+  computed: {
+    tableCreated() {
+      return new Date(this.tableData?.grebe_schema?.__create_at).toLocaleString()
+    }
+  },
   props: ['tableName'],
   watch: {
     tableName: {
       handler() {
         this.breadcrumbs.push({ text: this.tableName, disabled: true })
-
         Clickhouse.tableDetail(this.tableName, res => {
           this.tableData = res
         })
