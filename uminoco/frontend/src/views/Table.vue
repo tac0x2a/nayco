@@ -6,14 +6,28 @@
       </template>
     </v-breadcrumbs>
 
+    <!-- Dialogs -->
+    <v-dialog v-model="alert" persistent max-width="320">
+      <v-card>
+        <v-card-title class="headline">{{this.alertTitle}}</v-card-title>
+        <v-card-text v-if="this.alertMessage">{{this.alertMessage}}</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" text @click="alert = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <!-- Error -->
     <div v-if="failer">
       <v-container>
-        <v-card class="mx-auto" max-width="auto" tile>
-          <v-card-text>
-            <p class="display-1 text--primary">{{failer}}</p>
-          </v-card-text>
-        </v-card>
+        <v-alert
+        type="error"
+        prominent
+        border="left">
+          <h3 class="headline">{{failer.error}}</h3>
+          {{failer.message}}
+        </v-alert>
       </v-container>
     </div>
 
@@ -77,12 +91,12 @@
         </v-card>
       </v-container>
 
-      <!-- Buttons -->
+      <!-- Rename/Delete Buttons -->
       <v-container>
         <v-row>
           <v-col class="text-center" cols="12" sm="6"></v-col> <!-- dummy -->
           <v-col class="text-center" cols="12" sm="3">
-            <v-btn color="error" @click="renameDialog = true">Rename Table</v-btn>
+            <v-btn color="warning" @click="renameDialog = true; isReanmeEditable = false; renameNewTableName = ''">Rename Table</v-btn>
           </v-col>
           <v-col class="text-center" cols="12" sm="3">
             <v-btn color="error" >Delete Table</v-btn>
@@ -90,14 +104,14 @@
         </v-row>
       </v-container>
 
+      <!-- Rename Dialog -->
       <v-dialog v-model="renameDialog" max-width="500px">
-
         <v-card>
-          <v-toolbar flat color="yellow">
+          <v-toolbar flat color="warning">
             <v-icon>mdi-table-large</v-icon>
             <v-toolbar-title class="pa-2">Rename Table</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn color="yellow darken-3" fab small @click="isReanmeEditable = !isReanmeEditable">
+            <v-btn color="warning darken-1" fab small @click="isReanmeEditable = !isReanmeEditable">
               <v-icon v-if="isReanmeEditable">mdi-lock-open-variant</v-icon>
               <v-icon v-else>mdi-lock</v-icon>
             </v-btn>
@@ -105,11 +119,11 @@
 
           <v-card-title>Are you sure that rename the table name ?</v-card-title>
           <v-card-text>
-            <v-text-field :disabled="!isReanmeEditable" color="black" label="New Table Name" :placeholder="this.tableName"></v-text-field>
+            <v-text-field v-model="renameNewTableName" :disabled="!isReanmeEditable" color="black" label="New Table Name" :placeholder="this.tableName"></v-text-field>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" text @click="isReanmeEditable = renameDialog = false">
-              Rename
+            <v-btn color="warning" @click="postRename(tableName, renameNewTableName)">
+              RENAME
             </v-btn>
             <v-btn color="primary" text @click="isReanmeEditable = renameDialog = false">
               Cancel
@@ -128,6 +142,7 @@
         loading-text="Loading... Please wait"
       />
     </div>
+
   </div>
 </template>
 
@@ -136,10 +151,12 @@ import Clickhouse from '@/api/clickhouse.js'
 
 export default {
   components: {},
+
   data: () => ({
     breadcrumbs: [
       { text: 'Home', exact: true, disabled: false, to: { name: 'Home' } },
-      { text: 'Tables', exact: true, disabled: false, to: { name: 'Tables' } }
+      { text: 'Tables', exact: true, disabled: false, to: { name: 'Tables' } },
+      { text: 'loading...', exact: true, disabled: true }
     ],
     tableData: null,
     search: '',
@@ -153,8 +170,13 @@ export default {
       { text: 'Original Size [KB]', sortable: true, value: 'data_uncompressed_bytes' },
       { text: 'Position', sortable: true, value: 'position' }
     ],
+
+    alert: false,
+    alertTitle: '',
+    alertMessage: '',
     renameDialog: false,
-    isReanmeEditable: false
+    isReanmeEditable: false,
+    renameNewTableName: ''
   }),
 
   computed: {
@@ -164,19 +186,37 @@ export default {
       return new Date(createAt).toLocaleString()
     }
   },
+
   props: ['tableName'],
+
   watch: {
     tableName: {
       handler() {
-        this.breadcrumbs.push({ text: this.tableName, disabled: true })
+        this.breadcrumbs[2] = { text: this.tableName, disabled: true }
+
         Clickhouse.tableDetail(this.tableName, res => {
           this.tableData = res
         },
         err => {
-          this.failer = err
+          this.failer = { error: err, message: err?.response?.data?.message }
         })
       },
       immediate: true
+    }
+  },
+
+  methods: {
+    postRename(currentTableName, newTableName) {
+      this.isReanmeEditable = this.renameDialog = false
+
+      Clickhouse.renameTable(currentTableName, newTableName, res => {
+        this.$router.push({ name: 'Table', params: { tableName: newTableName } })
+      },
+      err => {
+        this.alertTitle = 'Faild to rename table...'
+        this.alertMessage = err?.response?.data?.message
+        this.alert = true
+      })
     }
   }
 }

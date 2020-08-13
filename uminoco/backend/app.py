@@ -2,7 +2,7 @@ import os
 import json
 from clickhouse_driver import Client
 
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 
 app = Flask(__name__, static_folder='../frontend/dist/static', template_folder='../frontend/dist')
 
@@ -42,7 +42,7 @@ def show_table(table_name=None):
     summary_res = client.execute(summary_query, {"table_name": table_name})
 
     if len(summary_res) <= 0:
-        return jsonify([]), 404
+        return jsonify({"message": "no table on DB.."}), 404
 
     response = {k: v for k, v in zip(summary_keys, summary_res[0])}
 
@@ -82,6 +82,20 @@ def show_table(table_name=None):
         pass
 
     return jsonify(response), 200
+
+
+@app.route('/api/v1/table/<src_table_name>/rename', methods=["POST"])
+def rename_table(src_table_name=None):
+    new_table_name = request.form.get("new_table_name", None)
+    if new_table_name is None:
+        return jsonify({"message": "New table name is not provided."}), 400
+    if src_table_name is None:
+        return jsonify({"message": "current table name is not provided."}), 400
+    if new_table_name == src_table_name:
+        return jsonify({"message": "Current and new table name are same"}), 400
+
+    return jsonify({"current": src_table_name, "new": new_table_name}), 200
+
 
 
 @app.route('/api/v1/disk_usage')
