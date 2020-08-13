@@ -6,7 +6,15 @@
       </template>
     </v-breadcrumbs>
 
-    <div v-if="tableData">
+    <div v-if="failer">
+      <v-card class="mx-auto" max-width="auto" outlined tile>
+        <v-card-text>
+          <p class="display-1 text--primary">{{failer}}</p>
+        </v-card-text>
+      </v-card>
+    </div>
+
+    <div v-else-if="tableData">
       <v-card class="mx-auto" max-width="auto" outlined tile>
         <v-card-text>
           <div>Table</div>
@@ -88,6 +96,7 @@ export default {
     ],
     tableData: null,
     search: '',
+    failer: null,
     columnsHeader: [
       { text: 'Name', sortable: true, value: 'name' },
       { text: 'Type', sortable: true, value: 'type' },
@@ -111,6 +120,9 @@ export default {
         this.breadcrumbs.push({ text: this.tableName, disabled: true })
         Clickhouse.tableDetail(this.tableName, res => {
           this.tableData = res
+        },
+        err => {
+          this.failer = err
         })
       },
       immediate: true

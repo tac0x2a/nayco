@@ -7,9 +7,11 @@ export default {
       callback(res.data)
     })
   },
-  tableDetail (tableName, callback) {
+  tableDetail (tableName, callback, errorCallback) {
     axios.get('/api/v1/table/' + tableName).then((res) => {
       callback(res.data)
+    }).catch((err) => {
+      errorCallback(err)
     })
   }
 }
