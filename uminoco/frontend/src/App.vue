@@ -5,7 +5,7 @@
 
         <v-list-item to="/">
           <v-list-item-action>
-            <v-icon>mdi-home</v-icon>
+            <v-icon>mdi-ferry</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>Home</v-list-item-title>
@@ -14,7 +14,7 @@
 
         <v-list-item to="/table">
           <v-list-item-action>
-            <v-icon>mdi-home</v-icon>
+            <v-icon>mdi-table-large</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>Tables</v-list-item-title>
@@ -25,7 +25,7 @@
 
         <v-list-item to="/develop">
           <v-list-item-action>
-            <v-icon>mdi-home</v-icon>
+            <v-icon>mdi-code-braces</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>Develop</v-list-item-title>
