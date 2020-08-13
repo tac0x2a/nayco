@@ -139,5 +139,21 @@ services:
     # -p Set ownership and permissions on the shares
     # -u "<username;password>[;ID;group;GID]"
 
-# volumes:
-#   storage_volume: {driver_opts:{ type: none, device: "${NAYCO_HOME}/volume/storage", o: bind }}
+  # Uminoco ----------------------------------------------------------------------------------
+  uminoco:
+    image: uminoco
+    restart: always
+    hostname: uminoco
+    build:
+      context: uminoco
+      args:
+        project_directory: "/projects/"
+    ports:
+      - "5000:5000"
+    environment:
+      # TZ: "Asia/Tokyo"
+      FLASK_ENV: "productiont"
+      DB_HOST: "clickhouse"
+      DB_PORT: 9000
+    restart: always
+

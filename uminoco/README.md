@@ -5,6 +5,7 @@ Uminoco is an discovery ship on the data lake. It will work with [nayco](https:/
 ## For Development
 
 ```sh
+$ cd uminoco
 $ docker-compose up
 ```
 
@@ -13,4 +14,12 @@ $ docker-compose up
 
 
 ## Deploy
-TBD
+In root directory
+
+```sh
+cd $NAYCO_ROOT
+$ docker-compose build
+$ docker-compose up -d
+```
+
++ Uminoco http://host:5000

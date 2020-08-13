@@ -74,6 +74,14 @@ Open source simple business intelligence application and sql editor tool for Cli
 ### Ports
 + 8080: Web interface.
 
+## [Uminoco](./uminoco/)
+Uminoco is an discovery ship on the data lake. It will work with [nayco](https://github.com/tac0x2a/nayco).
+
+Please see [README.md](./uminoco/README.md)
+
+### Ports
++ 5000: Web interface.
+
 
 ## [Node-RED](https://nodered.org/)
 Node-RED is a programming tool for wiring together hardware devices, APIs and online services in new and interesting ways.
