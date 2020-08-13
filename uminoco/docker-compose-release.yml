@@ -1,0 +1,13 @@
+# For release
+version: "3"
+services:
+  web_vue:
+    container_name: frontend
+    build:
+      context: frontend
+    volumes:
+      - './frontend:/app'
+      - '/app/node_modules'
+    environment:
+      API_HOST: web_flask
+    command: "npm run build"
