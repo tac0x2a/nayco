@@ -71,6 +71,15 @@ def show_table(table_name=None):
 
     response["columns"] = column_response
 
+    # Schema info
+    try:
+        schema_keys = ["__create_at", "source_id", "schema", "table_name"]
+        schema_query = f"SELECT {', '.join(schema_keys)} FROM schema_table where table_name = %(table_name)s"
+        schema_res = client.execute(schema_query, {"table_name": table_name})
+        response["grebe_schema"] = {k: v for k, v in zip(schema_keys, schema_res)}
+    except Exception:
+        pass
+
     return jsonify(response), 200
 
 
