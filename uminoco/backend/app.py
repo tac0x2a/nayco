@@ -94,7 +94,7 @@ def rename_table(src_table_name=None):
     if new_table_name == src_table_name:
         return jsonify({"message": "Current and new table name are same"}), 400
 
-    rename_query = f"RENAME TABLE `{src_table_name}` TO `{new_table_name}`"
+    rename_query = f"RENAME TABLE `{__escape_symbol(src_table_name)}` TO `{__escape_symbol(new_table_name)}`"
     update_schema_query = "ALTER TABLE schema_table UPDATE table_name = %(new)s WHERE table_name = %(src)s"
 
     # Try to rename table
@@ -109,7 +109,7 @@ def rename_table(src_table_name=None):
     except Exception as ex:
 
         try:
-            restore_query = f"RENAME TABLE `{new_table_name}` TO `{src_table_name}`"
+            restore_query = f"RENAME TABLE `{__escape_symbol(new_table_name)}` TO `{__escape_symbol(src_table_name)}`"
             client.execute(restore_query)
         except Exception as ex_restore:
             return jsonify({"message": f"Failed in execution rename query: {ex}, And restore failed.. :{ex_restore}. Please fix DB manually.."}), 500
@@ -127,7 +127,7 @@ def drop_table(table_name=None):
 
     # Try to drop table
     try:
-        drop_query = f"DROP TABLE `{table_name}`"
+        drop_query = f"DROP TABLE `{__escape_symbol(table_name)}`"
         client.execute(drop_query)
     except Exception as ex:
         return jsonify({"message": f"Failed in execution drop query: {ex}"}), 500
@@ -152,6 +152,9 @@ def show_host_info():
     response = {k: v for k, v in zip(keys, res[0])}
     return jsonify(response), 200
 
+
+def __escape_symbol(symbol: str):
+    return symbol.replace('`', '\\`')
 
 if __name__ == '__main__':
     app.run()
