@@ -193,6 +193,7 @@ export default {
             }
             if (this.srcTableData && this.dstTableData) {
               this.dstColumns = this.dstTableData.columns.slice().sort((a, b) => a - b)
+              this.selectedSrcColumnNames = []
               for (const idx in this.dstColumns) {
                 var dst = this.dstColumns[idx]
                 this.selectedSrcColumnNames[idx] = this.srcTableData.columns.find(src => dst.name === src.name)?.name
@@ -214,6 +215,7 @@ export default {
             this.dstColumns = this.dstTableData.columns.slice().sort((a, b) => a - b)
 
             if (this.srcTableData && this.dstTableData) {
+              this.selectedSrcColumnNames = []
               for (var idx in this.dstColumns) {
                 var dst = this.dstColumns[idx]
                 this.selectedSrcColumnNames[idx] = this.srcTableData.columns.find(src => dst.name === src.name)?.name
