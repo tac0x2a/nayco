@@ -41,6 +41,7 @@ services:
     ports:
       - 8123:8123 # HTTP client port
       - 9004:9004 # MySQL Interface(wire protocol) port
+      - 9000:9000 # Native port
 
     volumes:
       - ./volume/clickhouse:/var/lib/clickhouse
