@@ -185,20 +185,7 @@ export default {
         if (this.srcTableName) {
           Clickhouse.tableDetail(this.srcTableName, res => {
             this.srcTableData = res
-
-            this.srcColumnsMap = {}
-            for (const idx in this.srcTableData.columns) {
-              var src = this.srcTableData.columns[idx]
-              this.srcColumnsMap[src.name] = src
-            }
-            if (this.srcTableData && this.dstTableData) {
-              this.dstColumns = this.dstTableData.columns.slice().sort((a, b) => a - b)
-              this.selectedSrcColumnNames = []
-              for (const idx in this.dstColumns) {
-                var dst = this.dstColumns[idx]
-                this.selectedSrcColumnNames[idx] = this.srcTableData.columns.find(src => dst.name === src.name)?.name
-              }
-            }
+            this.reCreateColumnMap()
           },
           err => {
             this.failer = { error: err, message: err?.response?.data?.message }
@@ -212,15 +199,7 @@ export default {
         if (this.dstTableName) {
           Clickhouse.tableDetail(this.dstTableName, res => {
             this.dstTableData = res
-            this.dstColumns = this.dstTableData.columns.slice().sort((a, b) => a - b)
-
-            if (this.srcTableData && this.dstTableData) {
-              this.selectedSrcColumnNames = []
-              for (var idx in this.dstColumns) {
-                var dst = this.dstColumns[idx]
-                this.selectedSrcColumnNames[idx] = this.srcTableData.columns.find(src => dst.name === src.name)?.name
-              }
-            }
+            this.reCreateColumnMap()
           },
           err => {
             this.failer = { error: err, message: err?.response?.data?.message }
@@ -240,20 +219,25 @@ export default {
   },
 
   methods: {
-    getTypeIcon (type) {
-      // Integer numeric
-      // String alphabetical-variant
-      // Array code-brackets
-      // Float/Double decimal
-      // calendar-range
-      // UUID identifier
-
-      if (type === null) {
-        return 'mdi-null'
+    reCreateColumnMap() {
+      if (this.srcTableData && this.dstTableData) {
+        this.srcColumnsMap = {}
+        for (const idx in this.srcTableData.columns) {
+          var src = this.srcTableData.columns[idx]
+          this.srcColumnsMap[src.name] = src
+        }
+        this.dstColumns = this.dstTableData.columns.slice().sort((a, b) => a - b)
+        this.selectedSrcColumnNames = []
+        for (var idx in this.dstColumns) {
+          var dst = this.dstColumns[idx]
+          this.selectedSrcColumnNames[idx] = this.srcTableData.columns.find(src => dst.name === src.name)?.name
+        }
       }
+    },
+    getTypeIcon (type) {
+      if (type === null) return 'mdi-null'
 
       const tl = type.toLowerCase()
-
       if (tl.includes('arr')) {
         return 'mdi-code-brackets'
       }
@@ -269,7 +253,6 @@ export default {
       if (tl.includes('uuid')) {
         return 'mdi-card-account-details-outline'
       }
-
       return 'mdi-table-column'
     },
     migrate() {
