@@ -34,13 +34,13 @@
     <!-- content  -->
     <div v-else-if="tableData">
       <v-container>
-      <v-card class="mx-auto"  tile>
-        <v-card-text>
-          <div>Table</div>
-          <p class="display-1 text--primary">{{tableData.name}}</p>
-          <div v-if="this.tableCreated" >Created at: {{this.tableCreated}} </div>
-        </v-card-text>
-      </v-card>
+        <v-card class="mx-auto"  tile>
+          <v-card-text>
+            <div>Table</div>
+            <p class="display-1 text--primary">{{tableData.name}}</p>
+            <div v-if="this.tableCreated" >Created at: {{this.tableCreated}} </div>
+          </v-card-text>
+        </v-card>
       </v-container>
 
       <v-container>

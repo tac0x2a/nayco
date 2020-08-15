@@ -21,6 +21,15 @@
           </v-list-item-content>
         </v-list-item>
 
+        <v-list-item to="/table_migration">
+          <v-list-item-action>
+            <v-icon>mdi-table-large</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>TableMigration</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
       </v-list>
     </v-navigation-drawer>
 

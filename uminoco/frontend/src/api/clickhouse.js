@@ -33,5 +33,16 @@ export default {
     }).catch((err) => {
       errorCallback(err)
     })
+  },
+
+  migrateTable (srcTableName, dstTableName, srcColumns, dstColumns, callback) {
+    console.log(
+      JSON.stringify({
+        srcTableName: srcTableName,
+        dstTableName: dstTableName,
+        srcColumns: srcColumns,
+        dstColumns: dstColumns
+      })
+    )
   }
 }
