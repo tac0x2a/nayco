@@ -83,7 +83,8 @@
                             {{srcColumnsMap[selectedSrcColumnNames[index]].type}}
                           </v-chip>
                           <v-chip v-else class="ma-1" color="gray" text-color="white">
-                            None
+                            <v-avatar left><v-icon>{{getTypeIcon(null)}}</v-icon></v-avatar>
+                            NULL
                           </v-chip>
                         </v-col>
 
@@ -238,8 +239,36 @@ export default {
 
   methods: {
     getTypeIcon (type) {
-      // Todo change icon by types
-      return 'mdi-account-circle'
+      // Integer numeric
+      // String alphabetical-variant
+      // Array code-brackets
+      // Float/Double decimal
+      // calendar-range
+      // UUID identifier
+
+      if (type === null) {
+        return 'mdi-null'
+      }
+
+      const tl = type.toLowerCase()
+
+      if (tl.includes('arr')) {
+        return 'mdi-code-brackets'
+      }
+      if (tl.includes('str') || tl.includes('char')) {
+        return 'mdi-syllabary-hiragana'
+      }
+      if (tl.includes('int') || tl.includes('num') || tl.includes('float') || tl.includes('double')) {
+        return 'mdi-numeric'
+      }
+      if (tl.includes('cal') || tl.includes('date') || tl.includes('time')) {
+        return 'mdi-calendar-range'
+      }
+      if (tl.includes('uuid')) {
+        return 'mdi-card-account-details-outline'
+      }
+
+      return 'mdi-table-column'
     },
     migrate() {
       const srcColNames = this.selectedSrcColumnNames.slice()
