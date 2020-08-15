@@ -35,14 +35,17 @@ export default {
     })
   },
 
-  migrateTable (srcTableName, dstTableName, srcColumns, dstColumns, callback) {
-    console.log(
-      JSON.stringify({
-        srcTableName: srcTableName,
-        dstTableName: dstTableName,
-        srcColumns: srcColumns,
-        dstColumns: dstColumns
-      })
-    )
+  migrateTable (srcTableName, dstTableName, srcColumns, dstColumns, callback, errorCallback) {
+    const param = new FormData()
+    param.set('src_table_name', srcTableName)
+    param.set('dst_table_name', dstTableName)
+    param.set('src_columns', JSON.stringify(srcColumns))
+    param.set('dst_columns', JSON.stringify(dstColumns))
+
+    axios.post('/api/v1/migrate_table', param).then((res) => {
+      callback(res.data)
+    }).catch((err) => {
+      errorCallback(err)
+    })
   }
 }

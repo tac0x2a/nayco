@@ -111,29 +111,40 @@
                 </div><!-- v-if="this.dstColumns" -->
               </v-container>
 
-              <v-btn color="primary" @click=migrate >Migrate!</v-btn>
-              <v-btn text @click="stepperModel = 1">Back</v-btn>
+              <v-btn color="primary" @click=migrate :loading="isMigrating">Migrate!</v-btn>
+              <v-btn text @click="stepperModel = 1" :disabled="isMigrating" >Back</v-btn>
             </v-stepper-content>
 
           </v-stepper>
         </v-col>
       </v-row>
+
+      <v-dialog v-model="isCompleted" max-width="290">
+        <v-card>
+          <div v-if="migrationFailer">
+            <v-card-title class="headline">Migration Failed...</v-card-title>
+          </div>
+          <div v-else>
+            <v-card-title class="headline">Migration Success!</v-card-title>
+            <v-card-text>
+              {{this.migrationFailer}}
+            </v-card-text>
+          </div>
+
+        <v-card-actions>
+          <v-btn color="green darken-1" text @click="isCompleted = false">
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     </v-container>
   </div>
 </template>
 
 <script>
 import Clickhouse from '@/api/clickhouse.js'
-
-// function defaultselectedSrcColumnNames (dstColumns, srcTableData) {
-//   const srcColumns = srcTableData.columns
-//   const selected = {}
-//   for (var idx in dstColumns) {
-//     var dst = dstColumns[idx]
-//     selected[idx] = srcColumns.find(src => dst.name === src.name)
-//   }
-//   return selected
-// }
 
 export default {
   props: ['pSrcTableName', 'pDstTableName'],
@@ -154,7 +165,11 @@ export default {
 
     srcColumnsMap: {},
     dstColumns: null,
-    selectedSrcColumnNames: []
+    selectedSrcColumnNames: [],
+
+    isMigrating: false,
+    isCompleted: false,
+    migrationFailer: null
   }),
 
   computed: {
@@ -218,13 +233,6 @@ export default {
       this.tables = res
       this.srcTableName = this.pSrcTableName
       this.dstTableName = this.pDstTableName
-
-      // for debugguing
-      // this.srcTableData = null
-      // this.dstTableData = null
-      // this.srcTableName = '001_table'
-      // this.dstTableName = '002_table'
-      // this.stepperModel = 2
     })
   },
 
@@ -236,7 +244,19 @@ export default {
     migrate() {
       const srcColNames = this.selectedSrcColumnNames.slice()
       const dstColNames = this.dstColumns.map(c => c.name)
-      Clickhouse.migrateTable(this.srcTableName, this.dstTableName, srcColNames, dstColNames)
+      Clickhouse.migrateTable(this.srcTableName, this.dstTableName, srcColNames, dstColNames, res => {
+        this.migrationFailer = null
+        this.isMigrating = false
+        this.isCompleted = true
+      },
+      err => {
+        this.migrationFailer = err
+        this.isMigrating = false
+        this.isCompleted = true
+      })
+
+      this.isMigrating = true
+
       // Todo modal
     }
   }
