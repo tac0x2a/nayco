@@ -148,7 +148,7 @@ pub.single(topic=topic, payload=payload, hostname=hostname, port=1883)
 
 
 Naycoは、データの入力、変換、蓄積、可視化のためのソフトウェア群によって構成されています。
-基本の入力はMQTTで、JSON, JSONL, またはCSV形式のデータを受け付けます。
+基本の入力はMQTTで、JSON, JSONL, またはヘッダ付きCSV形式のデータを受け付けます。ヘッダなしのCSVフォーマットはサポートされません。
 ファイルによる入力も可能で、所定のフォルダに上記形式のファイルを置くか追記することで、同様にデータを入力できます。
 
 入力されたデータは内部のブローカーを経由し、DWHへ保存されます。このとき、データから推定された型を元に、自動的にテーブルが作成されます。
@@ -162,16 +162,25 @@ Naycoは、データの入力、変換、蓄積、可視化のためのソフト
   + 15672: RabbitMQの管理コンソールです。デフォルトのアカウントは `guest`:`guest` です。
 
 ### **[Grebe](https://github.com/tac0x2a/grebe)**
-  RabbitMQからメッセージを取り出し、ClickHouseへ格納するサービスです。
-  メッセージのペイロードを解析し、JSON/JSONL/CSVフォーマットと、各データの型を推定して、ClickHouseにテーブルを作成、Insertします。
+  RabbitMQからメッセージを取り出し、DWHへ格納するサービスです。
+  メッセージのペイロードを解析し、JSON/JSONL/ヘッダ付きCSVフォーマットと、各データの型を推定して、DWHにテーブルを作成し、Insertします。
 
 ### **[Samba](https://github.com/dperson/samba)**
   ユーザとNaycoがアクセス可能なネットワーク共有フォルダを提供します。
   o-namazuでのファイル入力や、Node-redで取り出したデータのファイル出力先としての使用を想定しています。
 
+  エクスプローラ等で以下のSMB共有フォルダを開いてアクセスします。共有名は `nayco` です。
+  + Windows: `\\<NAYCO_HOST>\nayco`
+  + Mac: `smb://<NAYCO_HOST>/nayco`
+
+  **初期設定**
+  + ユーザ名: `nayco`
+  + パスワード: `nayco`
+
+
 ### **[o-namazu](https://github.com/tac0x2a/o-namazu)**
-  Sambaの共有フォルダを監視し、ファイルの追加/変更があると、差分データをRabbitMQへ送信するサービスです。
-  監視対象とするフォルダにマーカファイル(`onamazu.conf`)を置いて、Naycoへ投入するデータをJSON/JSONL/CSVファイルとして同フォルダへ配置/追記します。
+  共有フォルダを監視し、ファイルの追加/変更があると、差分データをメッセージブローカーへ送信するサービスです。
+  監視対象とするフォルダにマーカファイル(`onamazu.conf`)を置いて、Naycoへ投入するデータをJSON/JSONL/ヘッダ付きCSVファイルとして同フォルダへ配置/追記します。
 
 ### **[ClickHouse](https://clickhouse.tech/)**
   Naycoのデータが集約されるDWHです。ClickHouseはOLAPに適した列指向のデータベースで、列単位のデータ圧縮により効率的なストレージ利用と高速な集計が可能であり、オンプレミスのデータ基盤としてのキーとなるサービスです。
@@ -189,7 +198,7 @@ Naycoは、データの入力、変換、蓄積、可視化のためのソフト
 ### **[Metabase](https://www.metabase.com/)**
   ![](/doc/img/metabase_sample.png)
 
-  ClickHouseのデータを可視化し、分析やダッシュボード構築を行うためのサービスです。[metabase-clickhouse-driver](https://github.com/enqueue/metabase-clickhouse-driver) を使って接続しています。
+  DWHのデータを可視化し、分析やダッシュボード構築を行うためのサービスです。ClickHouseとの接続には、[metabase-clickhouse-driver](https://github.com/enqueue/metabase-clickhouse-driver) を使っています。
   **初期設定**
   初回アクセス時は、以下のClickHouseとの接続設定を行う必要があります。
   + Database type `ClickHouse`,
@@ -231,7 +240,7 @@ Naycoは、データの入力、変換、蓄積、可視化のためのソフト
 
 ### **[Node-RED](https://nodered.org/)**
   ![](/doc/img/nodered_sample.png)
-  NaycoがSambaで共有するフォルダや、ClickHouse内のデータに対するETLサービスとして利用できます。その他、外部から取得したデータをRabbitMQへMQTT送信することで、データ入力サービスとしても利用できます。
+  NaycoがSambaで共有するフォルダや、DWH内のデータに対するETLサービスとして利用できます。その他、外部から取得したデータをRabbitMQへMQTT送信することで、データ入力サービスとしても利用できます。
 
   **ポート**
   + 1880: Webアクセス用ポート
@@ -300,8 +309,7 @@ $ git clone https://github.com/tac0x2a/nayco.git
 $ cd nayco
 ```
 
-
-## 起動
+### 起動
 
 ```sh
 $ docker-compose up -d
@@ -310,78 +318,79 @@ $ docker-compose up -d
 動作に必要なイメージをダウンロードするため、
 インターネットに接続可能な環境で初回起動してください。
 
- ## 停止
+### 停止
 ```sh
 $ docker-compose down
 ```
 
-## バックアップ
+### バックアップ
 ```sh
 $ ./backup.sh
 ```
+`volume`配下をマウントするサービスを停止し、`volume`配下をコピーして圧縮します。
+リストアは、バックアップファイルを展開して `volume` を置き換えてください。
 
 
 -------------------------------------------------
 # データの入力
-Naycoへデータを入力は、MQTTでデータをpublishするか、ファイルを共有フォルダに配置して行います。
-+ MQTTによるデータ入力では、JSON, JSONL, またはCSVフォーマットのテキストデータをペイロードに設定してNaycoホストの内部ブローカーへ送信します。
-+ ファイルによる入力は、Nayco上のSMB共有フォルダに、JSON, JSONL, またはCSVフォーマットのテキストファイルを配置します。配置したファイルは [o-namazu](https://github.com/tac0x2a/o-namazu) によって、内部のブローカーへ送信されます。
+Naycoへのデータ入力は大きく2つの方法があります。
 
-いずれのデータも、内部のブローカーであるRabbitMQへ送信されます。送信されたデータは、[Grebe](https://github.com/tac0x2a/grebe) によってデータ型が推定され、DWHへ蓄積されます。
++ MQTTインタフェース: 任意のMQTTクライアントで、NaycoのRabbitMQへメッセージをPublishする
++ ファイルインタフェース: o-namazu が監視するSMB共有フォルダにファイルを置く/追記する
+
+いずれの場合も、データはNayco内部のメッセージブローカーであるRabbitMQへ送信されます。送信されたデータは Grebe によってデータ型が推定され、DWHへ蓄積されます。
 
 
 ## MQTT インタフェース
+MQTTによるデータ入力では、JSON, JSONL, またはヘッダ付きCSVフォーマットのテキストデータをペイロードに設定してNaycoホストの内部ブローカーへ送信します。トピック名は、データ格納先テーブルの名前の初期値に使用されます。
+
 ## ファイル インタフェース
+ファイルインタフェースによるデータ入力は、Nayco上のSMB共有フォルダにJSON, JSONL, またはヘッダ付きCSVフォーマットのテキストファイルを配置して行います。
+配置したファイルは [o-namazu](https://github.com/tac0x2a/o-namazu) によって、MQTTで内部のブローカーへ送信されます。
 
-ここでは、以下のサンプルファイルを入力します。
+o-namazuでファイル入力を行うには、以下の準備が必要です。
+1. 監視対象とするフォルダにマーカファイル(`onamazu.conf`)を配置する
+2. (Portainer等のサービスから) o-namazu コンテナを再起動する
 
-+ [sample.jsonl](/doc/sample_data/sample.jsonl)
-  ```jsonl
-  { "title": "The Perfect Insider",      "pub_date": "1996/4/5", "lang": "ja" }
-  { "title": "Doctors in Isolated Room", "pub_date": "1996/7/5", "lang": "ja" }
-  { "title": "Mathematical Goodbye",     "pub_date": "1996/9/5", "lang": "ja" }
-  { "title": "Jack the Poetical Private","pub_date": "1997/1/5", "lang": "ja" }
-  { "title": "Who Inside",               "pub_date": "1997/4/5", "lang": "ja" }
-  { "title": "Illusion Acts Like Magic", "pub_date": "1997/10/5","lang": "ja" }
-  { "title": "Replaceable Summer",       "pub_date": "1998/1/7", "lang": "ja" }
-  { "title": "Switch Back",              "pub_date": "1998/4/5", "lang": "ja" }
-  { "title": "Numerical Models",         "pub_date": "1998/7/5", "lang": "ja" }
-  { "title": "The Perfect Outsider",     "pub_date": "1998/10/5","lang": "ja" }
+#### マーカファイルについて
+マーカファイル(`onamazu.conf`) は、監視対象とするファイルのパターンや、最後にファイルが変更されてからアーカイブまたは削除するまでの時間などを指定します。
+
++ `onamazu.config` の例
+  ```yaml
+  pattern: "*.csv"
+
+  callback_delay: 10
+
+  ttl: 300
+
+  mqtt:
+    host: rabbitmq
+    port: 1883
+    topic: nayco/sample
+    format: csv
+
+  archive:
+    type: zip
+    name: archive.zip
   ```
 
-エクスプローラで以下のSMB共有フォルダを開きます。
-+ Windows
-  ```
-  \\<NAYCO_HOST>\nayco
-  ```
++ `mqtt.host` および `mqtt.por` は常に上記の値を使用してください。これはNaycoのための特別な値なので、変更しないでください。
++ ファイルがCSVフォーマットである場合は `csv` を、JSON/JSONLフォーマットの場合は `txt` を指定します。
 
-+ Mac
-  ```
-  smb://<NAYCO_HOST>/nayco
-  ```
++ ファイルの読み込みは、ファイルが最後に書き込まれてから`callback_delay` 秒後に行われます。これは、ファイルの書き込みが完了する前にファイルを読み込まないようにするためです。大きなファイルをフォルダに配置したり、一度に大量のデータが追記されるようなケースでは、`callback_delay` を長めに設定するのが良いでしょう。
 
-以下のユーザ名パスワードで認証します。
-+ ユーザ名: `nayco`
-+ パスワード: `nayco`
++ `topic` は ブローカーへ送信するMQTTのトピック名で、データ格納先テーブルの名前の初期値に使用されます。
+
++ 最後にファイルが変更されてから`tll` 秒以上経過したファイルは、`archive` で指定された方法で退避されるか削除されます。
+  上記設定では、最後に書き込みがされてから5分以上が経過したファイルを、archive.zip に圧縮してアーカイブします。
+
+パラメータの詳細については [o-namazu の README.md](https://github.com/tac0x2a/o-namazu/README.md) を参照してください。
 
 
-```yaml
-pattern: "*.jsonl"
-
-ttl: 60
-callback_delay: 5
-
-mqtt:
-  host: rabbitmq
-  port: 1883
-  topic: nayco/sample
-  format: text
-
-archive:
-  type: directory
-  name: archived
-```
-
+#### 読み込みデータについて
++ `onamazu.config` が配置されたフォルダに `pattern` にマッチするファイルが配置されると、ファイルをすべて読みこんで、内部のブローカーへMQTTで送信します。
++ すでにデータを読み取られたことのあるファイルにデータが追記された場合、追記されたデータのみを新たに送信します。
+  このとき、`mqtt.format` が `csv` である場合、ヘッダ行(ファイルの先頭行)と、追加されたデータを結合して送信します。つまり、ファイルに9行追記された場合はヘッダも含めて10行のデータを送信します。
 
 
 
