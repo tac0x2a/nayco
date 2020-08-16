@@ -69,7 +69,7 @@
                       <v-col class="pa-2" key="3" cols="12" sm="1"></v-col>
 
                       <v-col class="pa-2" key="4" cols="12" sm="2">Columns</v-col>
-                      <v-col class="pa-2" key="5" cols="12" sm="3">Types</v-col>
+                      <v-col class="pa-o" key="5" cols="12" sm="3">Types</v-col>
                     </v-row>
 
                   <!-- Each columns -->
@@ -150,25 +150,38 @@
         </v-col>
       </v-row>
 
-      <v-dialog v-model="isCompleted" max-width="290">
-        <v-card>
-          <div v-if="migrationFailer">
-            <v-card-title class="headline">Migration Failed...</v-card-title>
-          </div>
-          <div v-else>
-            <v-card-title class="headline">Migration Success!</v-card-title>
-            <v-card-text>
-              {{this.migrationFailer}}
-            </v-card-text>
-          </div>
+      <!-- Migrating Dialog -->
+      <v-dialog v-model="isMigrating" max-width="320" persistent>
+        <v-card color="primary" dark >
+          <v-card-text>
+            Migrating...
+            <v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
 
-        <v-card-actions>
-          <v-btn color="green darken-1" text @click="isCompleted = false">
-            Close
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+      <!-- Migration Result Dialog -->
+      <v-dialog v-model="isCompleted" max-width="320">
+        <div v-if="migrationFailer">
+          <v-card color="warning">
+            <v-card-title class="headline">
+              <v-icon large left>mdi-alert</v-icon> Migration Failed... </v-card-title>
+            <v-card-text> {{this.migrationFailer}} </v-card-text>
+            <v-card-actions>
+              <v-btn text @click="isCompleted = false"> Close </v-btn>
+            </v-card-actions>
+          </v-card>
+        </div>
+        <div v-else>
+          <v-card>
+            <v-card-title class="headline">
+              <v-icon large left>mdi-check</v-icon>Migration Succeeded!</v-card-title>
+            <v-card-actions>
+              <v-btn text @click="isCompleted = false"> OK! </v-btn>
+            </v-card-actions>
+          </v-card>
+        </div>
+      </v-dialog>
 
     </v-container>
   </div>

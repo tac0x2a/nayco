@@ -2,7 +2,7 @@
   <div>
     <v-container>
       <v-banner>
-        <p class="display-1 text--primary">Now in shipbuilding...</p>
+        <p class="display-1 text--primary">Now in shipbuilding...🚢🔧</p>
         <template v-slot:actions>
           <v-btn
             text
