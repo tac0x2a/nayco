@@ -1,6 +1,8 @@
 
 # What is Nayco?
+
 [![nayco](./doc/img/nayco.svg)](https://github.com/tac0x2a/nayco)
+
 Nayco is a small, all-in-one data infrastructure for quickly launching a primarily on-premises data collection, storage and visualization environment.
 
 ## Key Features
@@ -59,6 +61,7 @@ pub.single(topic=topic, payload=payload, hostname=hostname, port=1883)
 #### 3. Check The Data
 Once the submission is complete, check the table has been created with the following data management service.
 + Uminoco: `http://<NAYCO_HOST>:5000/table/hello_nayco_001`
+
   ![](/doc/img/hello_nayco_table.png)
 
 You can see that the table is automatically created based on the data and the topic name.

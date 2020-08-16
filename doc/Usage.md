@@ -5,6 +5,7 @@ So, if you find poind to fix, I wish you raise issue or PR. It's very helpful. T
 -------------------------------------------------
 # Usage of Nayco
 ## OverView
+
 ![overview](/doc/img/overview.drawio.svg)
 
 Nayco consists of a suite of software for data entry, transformation, storage and visualization.
@@ -20,7 +21,9 @@ Other tools are included to manage containers and DWH tables.
 
 ## The services that make up Nayco
 ### **[RabbitMQ](https://www.rabbitmq.com/)**
+
   ![](/doc/img/rabbit_mq_sample.png)
+
   Message Broker Service, an endpoint for MQTT data entry into Nayco.
   **Ports:**
   + 1883: Port for connecting via MQTT.
@@ -56,7 +59,9 @@ This service retrieves messages from RabbitMQ and stores them in the DWH.
 
 
 ### **[Portainer](https://www.portainer.io/)**
+
   ![](/doc/img/portainer_sample.png)
+
   You can check the status of a container and restart/stop it.
   **Ports**.
   + 19000: The access port to the web service. After logging in, select `Local` and press the `Connect` button to make it available.
@@ -78,7 +83,9 @@ This service retrieves messages from RabbitMQ and stores them in the DWH.
   + 3000: Web access port
 
 ### **[Tabix](https://tabix.io/)**
+
   ![](/doc/img/tabix_sample.png)
+
   This is ClickHouse's SQL client available in a web browser. It comes with a simple visualization tool for query results.
 
   **Initial Setting**
@@ -92,10 +99,13 @@ This service retrieves messages from RabbitMQ and stores them in the DWH.
   + 8080: Web access port
 
 ### **[Uminoco](/uminoco/)**
+
   ![](/doc/img/uminoco_sample.png)
+
   You can see the size of the stored data and the compression ratio against the original data in each table/column. You can also rename tables, as Nayco automatically creates tables for storing data, the table names are automatically determined. This service allows you to change the table names later to suit your operation.
 
   ![](/doc/img/uminoco_sample02.png)
+
   When Nayco receives data from a new schema (number of columns, column names, data types, etc.), it creates a new table.
   Therefore, when the input data changes, such as increasing the number of collected data, the old and new data is stored in a different table.
   With this service, you can migrate data from the old table to the newly created table.
@@ -105,7 +115,9 @@ This service retrieves messages from RabbitMQ and stores them in the DWH.
 
 
 ### **[Node-RED](https://nodered.org/)**
+
   ![](/doc/img/nodered_sample.png)
+
   It can be used as an ETL service for folders shared by Nayco in Samba and data in the DWH. It can also be used as a data entry service by sending MQTT to RabbitMQ with data acquired from outside.
 
   **Ports**
@@ -114,6 +126,7 @@ This service retrieves messages from RabbitMQ and stores them in the DWH.
 
 ### **[Filebrowser](https://filebrowser.org/)**
   This service provides browser-based access to folders shared by Nayco in Samba.
+
   ![](/doc/img/filebrowser_sample.png)
 
   **Initial Setting**
@@ -290,7 +303,7 @@ Since Grebe uses the `schema_table` to determine the target table based on the d
 ## Data stored in ClickHouse
 [ClickHouse](https://clickhouse.tech/) is an open source column-oriented DWH that stores data in a tabular format, like an RDB.
 The columnar nature of data compression makes it very well suited for fast aggregation and efficient storage utilization in on-premises environments without ample resources such as the cloud.
-For more information about ClickHouse, see the documentation [What is ClickHouse?] (https://clickhouse.tech/docs/ja/).
+For more information about ClickHouse, see the documentation [What is ClickHouse?] (https://clickhouse.tech/docs/en/).
 
 The data is stored in the `default` database. (at least for now).
 The `default` database contains the data tables created by Grebe and the aforementioned `schema_table`.
@@ -327,7 +340,7 @@ You can query in SQL as well as RDB, as shown below.
 
   ![](/doc/img/tabix_query.png)
 
-See ClickHouse's [SQL Reference](https://clickhouse.tech/docs/ja/sql-reference/) for more information about SQL.
+See ClickHouse's [SQL Reference](https://clickhouse.tech/docs/en/sql-reference/) for more information about SQL.
 
 
 -------------------------------------------------
@@ -363,8 +376,8 @@ When Nayco receives data from a new schema (number of columns, column names, dat
 So, if the input data changes, such as increasing the number of collected data, the old and new data will be stored in a different table.
 In this case, you can copy the data from the old table to the newly created table from Uminoco.
 
-
 ![](/doc/img/uminoco_sample02.png)
+
 1. Go to `http://<NAYCO_HOST>:5000/table_migration` and use `Select Tables` to specify the source and target tables.
 
 2. Then, use `Select Columns` to select the values to be stored in the columns of the destination table from the columns of the source table. If the source column is not selected, null or an empty array `[]` is copied.
@@ -383,6 +396,8 @@ Please refer to [Portainer documentation](https://www.portainer.io/documentation
 # Nayco Usage Example
 
 Example: The temperature and humidity in my room. Even though I'm on vacation, I know I'm at home almost every day.
+
 ![](/doc/img/metabase_example.png)
+
 The temperature/humidity/illumination obtained from [Nature Remo] (https://nature.global/) in Node-Red is fed into RabbitMQ and visualized in Metabase.
 I only set up the Node-Red data acquisition pipeline and the Metabase screen. There is no need to convert the data or define tables on the way.

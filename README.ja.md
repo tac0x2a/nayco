@@ -1,4 +1,5 @@
 # Nayco とは
+
 [![nayco](/doc/img/nayco.svg)](https://github.com/tac0x2a/nayco)
 
 Nayco(内湖) は、主にオンプレミスのデータ収集・蓄積・可視化環境を素早く立ち上げるための、オールインワンの小さなデータ基盤です。
@@ -59,6 +60,7 @@ pub.single(topic=topic, payload=payload, hostname=hostname, port=1883)
 
 送信が完了したら、以下のデータ管理サービスでテーブルが作成されたことを確認します。
 + Uminoco: `http://<NAYCO_HOST>:5000/table/hello_nayco_001`
+
   ![](/doc/img/hello_nayco_table.png)
 
 データとtopic名を元にテーブルが自動作成されていることを確認できます。

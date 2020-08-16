@@ -3,6 +3,7 @@
 # Naycoの使い方
 
 ## 概要
+
 ![overview](/doc/img/overview.drawio.svg)
 
 
@@ -18,7 +19,9 @@ DWHへ格納されたデータは、Naycoが内蔵する可視化サービスを
 
 ## Naycoを構成するサービス一覧
 ### **[RabbitMQ](https://www.rabbitmq.com/)**
+
   ![](/doc/img/rabbit_mq_sample.png)
+
   メッセージブローカーサービスです。NaycoにMQTTでデータ入力する際のエンドポイントです。
   **ポート:**
   + 1883: MQTTで接続するためのポートです。
@@ -53,12 +56,15 @@ DWHへ格納されたデータは、Naycoが内蔵する可視化サービスを
   + 9004: MySQL インタフェース(wire protocol)のポートです。一般的なMySQLのクライアントを用いて接続することができます。
 
 ### **[Portainer](https://www.portainer.io/)**
+
   ![](/doc/img/portainer_sample.png)
+
   コンテナの状態を一覧し、動作状況の確認やコンテナの再起動/停止が可能です。
   **ポート**
   + 19000: Webサービスへのアクセスポートです。ログイン後、`Local` を選択して`Connect` ボタンを押して利用できるようになります。
 
 ### **[Metabase](https://www.metabase.com/)**
+
   ![](/doc/img/metabase_sample.png)
 
   DWHのデータを可視化し、分析やダッシュボード構築を行うためのサービスです。ClickHouseとの接続には、[metabase-clickhouse-driver](https://github.com/enqueue/metabase-clickhouse-driver) を使っています。
@@ -75,7 +81,9 @@ DWHへ格納されたデータは、Naycoが内蔵する可視化サービスを
   + 3000: Webアクセス用ポート
 
 ### **[Tabix](https://tabix.io/)**
+
   ![](/doc/img/tabix_sample.png)
+
   Webブラウザで利用可能な、ClickHouseのSQLクライアントです。クエリ結果の簡単な可視化ツールが付属しています。
 
   **初期設定**
@@ -89,10 +97,13 @@ DWHへ格納されたデータは、Naycoが内蔵する可視化サービスを
   + 8080: Webアクセス用ポート
 
 ### **[Uminoco](/uminoco/)**
+
   ![](/doc/img/uminoco_sample.png)
+
   蓄積されたデータのサイズや元データに対する圧縮率などをテーブル/カラムごとに確認することができます。また、テーブル名を変更することができます。Naycoは蓄積先のテーブルを自動で作成するため、テーブル名も自動的に決定されてしまいます。本サービスを用いることで、後から運用に適したテーブル名に変更する事ができます。
 
   ![](/doc/img/uminoco_sample02.png)
+
   Naycoは新しいスキーマのデータ(カラム数, カラム名, データ型など)を受け取ると、新たにテーブルを作成します。
   そのため、収集データを増やすなど入力データが変化すると、新旧のデータが別のテーブルに格納されてしまいます。
   本サービスを用いることで、新しく作られたテーブルに、古いテーブルからデータを移行することができます。
@@ -102,7 +113,9 @@ DWHへ格納されたデータは、Naycoが内蔵する可視化サービスを
 
 
 ### **[Node-RED](https://nodered.org/)**
+
   ![](/doc/img/nodered_sample.png)
+
   NaycoがSambaで共有するフォルダや、DWH内のデータに対するETLサービスとして利用できます。その他、外部から取得したデータをRabbitMQへMQTT送信することで、データ入力サービスとしても利用できます。
 
   **ポート**
@@ -111,6 +124,7 @@ DWHへ格納されたデータは、Naycoが内蔵する可視化サービスを
 
 ### **[Filebrowser](https://filebrowser.org/)**
   NaycoがSambaで共有するフォルダへブラウザベースからアクセスするためのサービスです。
+
   ![](/doc/img/filebrowser_sample.png)
 
   **初期設定**
@@ -357,6 +371,7 @@ Naycoは新しいスキーマのデータ(カラム数, カラム名, データ�
 その場合、Uminocoから、古いテーブルから新しく作られたテーブルへデータをコピーして引き継ぐことができます。
 
 ![](/doc/img/uminoco_sample02.png)
+
 1. `http://<NAYCO_HOST>:5000/table_migration` へアクセスし、`Select Tables` でコピー元とコピー先のテーブルを指定します。
 2. 次に、`Select Columns` で、コピー先テーブルのカラムに格納する値を、コピー元テーブルのカラムから選択します。コピー元カラムが選択されていない場合、NULLまたは空の配列`[]` がコピーされます。
 3. データ型が一致しないなど、データによってはコピーに失敗する可能性がある場合、中央のアイコンが警告表示となります。
@@ -374,6 +389,8 @@ Portainerの使い方については、[Portainer documentation](https://www.por
 # Naycoの利用例
 
 例: 私の部屋の温湿度。休暇中にも関わらず、ほぼ毎日自宅に居ることがわかる。
+
 ![](/doc/img/metabase_example.png)
+
 Node-Redで [Nature Remo](https://nature.global/)から取得した温度/湿度/照度を RabbitMQへ投入し、Metabaseで可視化しています。
 設定したのは Node-Red のデータ取得パイプラインと、Metabaseの画面だけです。途中のデータ変換やテーブル定義などの設定は不要です。
