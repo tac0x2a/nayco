@@ -35,6 +35,9 @@ Message broker service. The MQTT port listen json format messages. Its general e
 ## [Grebe](https://github.com/tac0x2a/grebe)
 Grebe is forwarder JSON message from RabbitMQ to Clickhouse.
 
+## [o-namazu](https://github.com/tac0x2a/o-namazu)
+o-namazu is data collector that traverse specified directories. You can be target of traverse just place onamazu.conf file.
+
 ## [ClickHouse](https://clickhouse.tech/)
 ClickHouse is a free analytics DBMS for big data. Central data storage of Nayco.
 Default database is `default`, and user name and password is `default`.
@@ -103,4 +106,5 @@ Node-RED is a programming tool for wiring together hardware devices, APIs and on
 
 ## [Samba](https://github.com/dperson/samba)
 > Samba docker container
+
 Pleaase see https://github.com/dperson/samba
