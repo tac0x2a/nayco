@@ -1,16 +1,16 @@
 # Nayco とは
 [![nayco](/doc/img/nayco.svg)](https://github.com/tac0x2a/nayco)
 
-Nayco(内湖) は、主にオンプレミスでデータの収集・蓄積・可視化を素早く立ち上げるためのオールインワンの基盤です。
+Nayco(内湖) は、主にオンプレミスでデータの収集・蓄積・可視化環境を素早く立ち上げるための、オールインワンの小さなデータ基盤です。
 
 
 ## 主な特徴
 + Dockerコンテナ群で構成され、`docker-compose` コマンド一発で起動
-+ 入力データを元にスキーマを推定し、自動でテーブルを作成。データに合わせてテーブルを作成する必要はありません。
 + 列指向DWH([ClickHouse](https://clickhouse.tech/))による、高速な集計とデータ圧縮による高いストレージ効率
-+ サービスはすべてOSS
++ 入力データを元にスキーマを推定し、自動でDWHにテーブルを作成。データに合わせてテーブルを作成する必要はありません。
++ 構成するソフトウェアは全てOSS
 
-`docker-compose` コマンドで立ち上げたあとは、共有フォルダにファイルを置いたりMQTTでデータを送信するだけで、DWHへ自動でデータが蓄積され、[Metabase](https://www.metabase.com/)やサードパーティのツールによってデータを利用することができます。
+`docker-compose` コマンドで立ち上げたあとは、共有フォルダにファイルを置いたりMQTTでデータを送信するだけで、DWHへ自動でデータが蓄積され、[Metabase](https://www.metabase.com/)や一般的なツールによってデータを利用することができます。
 
 
 ## クイックスタート
@@ -67,30 +67,11 @@ pub.single(topic=topic, payload=payload, hostname=hostname, port=1883)
 今はデータが1件だけなので圧縮率が悪く見えますが、データが増えるにつれて、ClickHouseによるデータ圧縮が効果を発揮します。
 
 
-次に、テーブルの中身を確認するために、DWH(ClickHouse)のWebクライアントでデータをクエリします。
-+ Tabix: `http://<NAYCO_HOST>:8080`
-  ![](/doc/img/tabix.png)
-  + Name: 任意
-  + `http://host:port` : `http://<host-of-nayco-running>:8123`
-  + Login: `default`
-  + Password: empty
-  + (Experimental) HTTP Base auth: True
-
-サインインしたら、左のペインのテーブルの一覧から、確認したいテーブルを開きます。
-  ![](/doc/img/tabix_schema.png)
-
-ダブルクリックすると、何件かのレコードを確認することができます。先程MQTTで送信したデータが格納されていることを確認します。
-  ![](/doc/img/tabix_table.png)
-
-以下のように、RDBと同様にSQLでクエリすることができます。SQLについては ClickHouseの[SQLリファレンス](https://clickhouse.tech/docs/ja/sql-reference/)を参照してください。
-  ![](/doc/img/tabix_query.png)
-
-
 #### 4. データの可視化
 蓄積したデータを可視化するサービスとして、Naycoには[Metabase](https://www.metabase.com/) が含まれています。
 + Metabase: `http://<NAYCO_HOST>:3000`
 
-初回アクセス時に、ClickHouseのDBをデータソースとして登録する必要があります。
+Metabaseを利用するためにあ、初回アクセス時に、DWH(ClickHouse)のDBをデータソースとして登録する必要があります。
 + Database type `ClickHouse`,
 + Database Name: 任意
 + Host: `clickhouse`
@@ -100,7 +81,7 @@ pub.single(topic=topic, payload=payload, hostname=hostname, port=1883)
 
 ![](/doc/img/metabase_clickhouse.png)
 
-上記をSaveすると、Naycoに蓄積されたデータをMetabseで可視化する準備が整いました。
+上記をSaveすれば、Naycoに蓄積されたデータをMetabseで可視化する準備が整いました。(Metabaseのクロールが実行されるまでの間、実際のテーブルがMetabase上に表示されない場合があります)
 試しに、簡単な可視化をしてみましょう。Metabase上で `hello_nayco_001` テーブルが見えるようになったので、以下のような可視化(Question)を行います。
 Metabaseの使い方については、[Metabaseのドキュメント](https://www.metabase.com/docs/latest/getting-started.html)を参考にしてください。
 
@@ -137,8 +118,7 @@ pub.single(topic=topic, payload=payload, hostname=hostname, port=1883)
 ![](/doc/img/metabase_10.png)
 
 
-このように、MQTTでデータを送信するだけで、簡単に可視化が可能です。
-
+このように、MQTTでデータを送信するだけで、簡単に可視化が可能です。その他、任意のSQLクライアントでDWHを直接クエリしたり、ファイルとしてエクスポートすることが可能です。
 
 -------------------------------------------------
 # 基本
@@ -152,6 +132,10 @@ Naycoは、データの入力、変換、蓄積、可視化のためのソフト
 ファイルによる入力も可能で、所定のフォルダに上記形式のファイルを置くか追記することで、同様にデータを入力できます。
 
 入力されたデータは内部のブローカーを経由し、DWHへ保存されます。このとき、データから推定された型を元に、自動的にテーブルが作成されます。
+
+DWHへ格納されたデータは、Naycoが内蔵する可視化サービスを用いて分析やダッシュボードを作ったり、外部のSQLクライアントから直接データを利用することができます。
+
+その他、コンテナの管理ツールや、DWHのテーブルを管理するツールが含まれています。
 
 ## Naycoを構成するサービス一覧
 ### **[RabbitMQ](https://www.rabbitmq.com/)**
@@ -286,7 +270,7 @@ Naycoは、データの入力、変換、蓄積、可視化のためのソフト
       └── storage_volume
   ```
 
-+ 起動すると、`$NAYCO_HOME/volume` が作成されます。ここには各種設定や蓄積されたデータなど、各コンテナがマウントするボリュームが配置されます。
++ 起動すると、`$NAYCO_HOME/volume` が作成されます。ここには各種設定や蓄積されたデータなど、各コンテナがマウントするボリュームが配置されます。特に、`$NAYCO_HOME/volume/storage_volume` は、Sambaで共有されるディレクトリです。その他のディレクトリについては気にする必要はありません。
 
 + `uminoco/docker-compose.yml` は Uminocoの開発環境のためのdocker-compose ファイルです。
 
@@ -393,9 +377,71 @@ o-namazuでファイル入力を行うには、以下の準備が必要です。
   このとき、`mqtt.format` が `csv` である場合、ヘッダ行(ファイルの先頭行)と、追加されたデータを結合して送信します。つまり、ファイルに9行追記された場合はヘッダも含めて10行のデータを送信します。
 
 
-
 -------------------------------------------------
 # データの蓄積
+
+## Grebeによるデータ型推定とテーブル作成
+メッセージブローカに投入されたデータは [Grebe](https://github.com/tac0x2a/grebe)(と内部で使われている[Lake Weed](https://github.com/tac0x2a/lake_weed)) によってデータ型が推定され、DWH(ClickHouse)のスキーマを決定し、テーブルが自動作成されて蓄積されます。
+
+Grebeは蓄積先のテーブルを以下のように決定します。
+1. ペイロード中の各カラムデータをパースし、カラムごとのデータ型を推定する。
+   ペイロードに複数行のデータが含まれている場合、同一カラムのデータを全て格納可能な型を選択する。例えば、日時フォーマットの文字列と実数が同一カラムに含まれる場合、このカラムは(両者を格納可能な)文字列型と推定する。
+   データ型の推定および変換規則は [Lake Weed](https://github.com/tac0x2a/lake_weed/blob/master/tests/test_clickhouse.py) を参照。
+   この、カラム名と推定されたデータ型のペアの集合を、ここではスキーマとする。
+2. トピック中の '/' を '_' へ置換し、データソース名とする。
+3. すでに同一データソース名かつ同一のスキーマでテーブルが作成されている場合、そのテーブルにデータを挿入する。
+4. まだ上記のテーブルが存在しない場合、本スキーマに該当するテーブルを新たにテーブルを作成し、そのテーブルにデータを挿入する。テーブル名は `データソース名_%03d` とする。
+
+データソース名およびスキーマは、DWH上の特別なテーブル`schema_table` に格納されており、Grebeはこのテーブルを参照してデータの格納先テーブルを決定します。
+Grebeが新たにテーブルを作成する際は、`schema_table` にデータソース名、スキーマ、格納先テーブル名をInsertします。
+
+後述のUminocoによってテーブル名を変更した場合、`schema_table` 上の格納先テーブル名の値も変更されます。
+Grebe はデータソース名とスキーマを元に`schema_table` を参照して格納先テーブルを決定しているため、テーブル名を変更した後も、Grebeは名前変更後のテーブルにデータを格納し続ける事ができます。
+
+
+## ClickHouseへ蓄積されたデータ
+[ClickHouse](https://clickhouse.tech/) はRDBのように表形式でデータを格納するオープンソースの列指向DWHです。
+列指向の特徴であるデータ圧縮は、クラウドのように潤沢なリソースのないオンプレミス環境でも高速に集計を行い、効率的にストレージを利用するために非常に適しています。
+ClickHouseについてはドキュメント [ClickHouseとは?](https://clickhouse.tech/docs/ja/) を参照してください。
+
+データは、`default` データベースに格納されます。(少なくとも現時点では)
+`default` データベースには、Grebeが作成したデータテーブルと、前述の `schema_table` が配置されます。
+
+各データテーブルおよび `schema_table` は通常、読み取り専用として参照してください。
+これらのテーブルはGrebeおよびUminocoが管理しているため、手動で変更を加えると不整合が生じる場合があります。
+
+テーブル名の変更, テーブルの削除, テーブルのデータを他のテーブルへコピーしたい場合は、 Uminoco から行ってください。
+
+
+
+#### Tabixによる蓄積データの確認
+TabixはDWH(ClickHouse)のSQLクライアントで、Naycoに同梱されています。
+このサービスでDWHのデータをSQLでクエリすることができます。
+
++ Tabix: `http://<NAYCO_HOST>:8080`
+
+  ![](/doc/img/tabix.png)
+
+  + Name: 任意
+  + `http://host:port` : `http://<host-of-nayco-running>:8123`
+  + Login: `default`
+  + Password: empty
+  + (Experimental) HTTP Base auth: True
+
+サインインしたら、左のペインのテーブルの一覧から、確認したいテーブルを開きます。
+
+  ![](/doc/img/tabix_schema.png)
+
+ダブルクリックすると、レコードを確認することができます。
+
+  ![](/doc/img/tabix_table.png)
+
+以下のように、RDBと同様にSQLでクエリすることができます。
+
+  ![](/doc/img/tabix_query.png)
+
+SQLについては ClickHouseの[SQLリファレンス](https://clickhouse.tech/docs/ja/sql-reference/)を参照してください。
+
 
 -------------------------------------------------
 # データの可視化
@@ -408,6 +454,8 @@ o-namazuでファイル入力を行うには、以下の準備が必要です。
 
 -------------------------------------------------
 # その他
+
+
 
 -------------------------------------------------
 # Contributing
