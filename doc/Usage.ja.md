@@ -1,29 +1,19 @@
-# はじめに
-## Nayco とは
+# Nayco とは
 [![nayco](/doc/img/nayco.svg)](https://github.com/tac0x2a/nayco)
 
-Nayco(内湖) は、主にオンプレミスでのデータの収集・蓄積・可視化システムを素早く立ち上げるためのオールインワン環境です。
+Nayco(内湖) は、主にオンプレミスでデータの収集・蓄積・可視化を素早く立ち上げるためのオールインワンの基盤です。
 
 
 ## 主な特徴
 + Dockerコンテナ群で構成され、`docker-compose` コマンド一発で起動
-+ 入力データを元にスキーマを推定し、自動でテーブルを作成
-+ 列指向のDWH([ClickHouse](https://clickhouse.tech/))による高速な集計と、データ圧縮による効率的なストレージ
++ 入力データを元にスキーマを推定し、自動でテーブルを作成。データに合わせてテーブルを作成する必要はありません。
++ 列指向DWH([ClickHouse](https://clickhouse.tech/))による、高速な集計とデータ圧縮による高いストレージ効率
++ サービスはすべてOSS
 
 `docker-compose` コマンドで立ち上げたあとは、共有フォルダにファイルを置いたりMQTTでデータを送信するだけで、DWHへ自動でデータが蓄積され、[Metabase](https://www.metabase.com/)やサードパーティのツールによってデータを利用することができます。
 
-## 概要
-![overview](/doc/img/overview.drawio.svg)
 
-
-Naycoは、データの入力、変換、蓄積、可視化のためのソフトウェア群によって構成されています。
-基本の入力はMQTTで、JSON, JSONL, またはCSV形式のデータを受け付けます。
-ファイルによる入力も可能で、所定のフォルダに上記形式のファイルを置くか追記することで、同様にデータを入力できます。
-
-入力されたデータは内部のブローカーを経由し、DWHへ保存されます。このとき、データから推定された型を元に、自動的にテーブルが作成されます。
-
-
-## 使い方
+## クイックスタート
 
 #### 1. 起動
 ```sh
@@ -142,15 +132,183 @@ port = 1883
 pub.single(topic=topic, payload=payload, hostname=hostname, port=1883)
 ```
 
-![](/doc/img/metabase_7.png)
+その後、Metabaseのページをリロードすると追加されたデータが表示されます。
+
+![](/doc/img/metabase_10.png)
+
+
+このように、MQTTでデータを送信するだけで、簡単に可視化が可能です。
+
 
 -------------------------------------------------
 # 基本
 
+## 概要
+![overview](/doc/img/overview.drawio.svg)
+
+
+Naycoは、データの入力、変換、蓄積、可視化のためのソフトウェア群によって構成されています。
+基本の入力はMQTTで、JSON, JSONL, またはCSV形式のデータを受け付けます。
+ファイルによる入力も可能で、所定のフォルダに上記形式のファイルを置くか追記することで、同様にデータを入力できます。
+
+入力されたデータは内部のブローカーを経由し、DWHへ保存されます。このとき、データから推定された型を元に、自動的にテーブルが作成されます。
+
+## Naycoを構成するサービス一覧
+### **[RabbitMQ](https://www.rabbitmq.com/)**
+  ![](/doc/img/rabbit_mq_sample.png)
+  メッセージブローカーサービスです。NaycoにMQTTでデータ入力する際のエンドポイントです。
+  **ポート:**
+  + 1883: MQTTで接続するためのポートです。
+  + 15672: RabbitMQの管理コンソールです。デフォルトのアカウントは `guest`:`guest` です。
+
+### **[Grebe](https://github.com/tac0x2a/grebe)**
+  RabbitMQからメッセージを取り出し、ClickHouseへ格納するサービスです。
+  メッセージのペイロードを解析し、JSON/JSONL/CSVフォーマットと、各データの型を推定して、ClickHouseにテーブルを作成、Insertします。
+
+### **[Samba](https://github.com/dperson/samba)**
+  ユーザとNaycoがアクセス可能なネットワーク共有フォルダを提供します。
+  o-namazuでのファイル入力や、Node-redで取り出したデータのファイル出力先としての使用を想定しています。
+
+### **[o-namazu](https://github.com/tac0x2a/o-namazu)**
+  Sambaの共有フォルダを監視し、ファイルの追加/変更があると、差分データをRabbitMQへ送信するサービスです。
+  監視対象とするフォルダにマーカファイル(`onamazu.conf`)を置いて、Naycoへ投入するデータをJSON/JSONL/CSVファイルとして同フォルダへ配置/追記します。
+
+### **[ClickHouse](https://clickhouse.tech/)**
+  Naycoのデータが集約されるDWHです。ClickHouseはOLAPに適した列指向のデータベースで、列単位のデータ圧縮により効率的なストレージ利用と高速な集計が可能であり、オンプレミスのデータ基盤としてのキーとなるサービスです。
+  **ポート**
+  + 8123: HTTP クライアントのポートです
+  + 9000: ClickHouseのNative クライアントのポートです
+  + 9004: MySQL インタフェース(wire protocol)のポートです。一般的なMySQLのクライアントを用いて接続することができます。
+
+### **[Portainer](https://www.portainer.io/)**
+  ![](/doc/img/portainer_sample.png)
+  コンテナの状態を一覧し、動作状況の確認やコンテナの再起動/停止が可能です。
+  **ポート**
+  + 19000: Webサービスへのアクセスポートです。ログイン後、`Local` を選択して`Connect` ボタンを押して利用できるようになります。
+
+### **[Metabase](https://www.metabase.com/)**
+  ![](/doc/img/metabase_sample.png)
+
+  ClickHouseのデータを可視化し、分析やダッシュボード構築を行うためのサービスです。[metabase-clickhouse-driver](https://github.com/enqueue/metabase-clickhouse-driver) を使って接続しています。
+  **初期設定**
+  初回アクセス時は、以下のClickHouseとの接続設定を行う必要があります。
+  + Database type `ClickHouse`,
+  + Database Name: any
+  + Host: `clickhouse`
+  + Port: `8123`
+  + Database user name: `default`
+  + Database password: empty
+
+  **ポート**
+  + 3000: Webアクセス用ポート
+
+### **[Tabix](https://tabix.io/)**
+  ![](/doc/img/tabix_sample.png)
+  Webブラウザで利用可能な、ClickHouseのSQLクライアントです。クエリ結果の簡単な可視化ツールが付属しています。
+
+  **初期設定**
+  + Name: any
+  + `http://host:port` : `http://<host-of-nayco-running>:8123`
+  + Login: `default`
+  + Password: empty
+  + (Experimental) HTTP Base auth: True
+
+  **Ports**
+  + 8080: Webアクセス用ポート
+
+### **[Uminoco](/uminoco/)**
+  ![](/doc/img/uminoco_sample.png)
+  蓄積されたデータのサイズや元データに対する圧縮率などをテーブル/カラムごとに確認することができます。また、テーブル名を変更することができます。Naycoは蓄積先のテーブルを自動で作成するため、テーブル名も自動的に決定されてしまいます。本サービスを用いることで、後から運用に適したテーブル名に変更する事ができます。
+
+  ![](/doc/img/uminoco_sample02.png)
+  Naycoは新しいスキーマのデータ(カラム数, カラム名, データ型など)を受け取ると、新たにテーブルを作成します。
+  そのため、収集データを増やすなど入力データが変化すると、新旧のデータが別のテーブルに格納されてしまいます。
+  本サービスを用いることで、新しく作られたテーブルに、古いテーブルからデータを移行することができます。
+
+  **ポート**
+  + 5000: Webアクセス用ポート
+
+
+### **[Node-RED](https://nodered.org/)**
+  ![](/doc/img/nodered_sample.png)
+  NaycoがSambaで共有するフォルダや、ClickHouse内のデータに対するETLサービスとして利用できます。その他、外部から取得したデータをRabbitMQへMQTT送信することで、データ入力サービスとしても利用できます。
+
+  **ポート**
+  + 1880: Webアクセス用ポート
+
+
+### **[Filebrowser](https://filebrowser.org/)**
+  NaycoがSambaで共有するフォルダへブラウザベースからアクセスするためのサービスです。
+  ![](/doc/img/filebrowser_sample.png)
+
+  **初期設定**
+  + Host: `filebrowser`
+  + Port: `8082`
+  + User: `admin`
+  + Pass: `admin`
+
+  **ポート**
+  + 8082: Webアクセス用ポート
+
+
+## ディレクトリ構成
+  ```
+  ├── LICENSE
+  ├── README.md
+  ├── backup.sh
+  ├── doc
+  ├── docker-compose.yml
+  ├── metabase
+  ├── rabbitmq
+  ├── uminoco
+  │   ├── Dockerfile
+  │   ├── README.md
+  │   ├── backend
+  │   ├── docker-compose.yml
+  │   └── frontend
+  │
+  └── volume
+      ├── clickhouse
+      ├── grebe
+      ├── metabase
+      ├── nodered
+      ├── onamazu
+      ├── portainer
+      └── storage_volume
+  ```
+
++ 起動すると、`$NAYCO_HOME/volume` が作成されます。ここには各種設定や蓄積されたデータなど、各コンテナがマウントするボリュームが配置されます。
+
++ `uminoco/docker-compose.yml` は Uminocoの開発環境のためのdocker-compose ファイルです。
+
+## セットアップ
+Naycoの主な動作要件は以下です
++ Docker: version 19.03.12 以降
++ docker-compose: version 1.26.2 以降
+
+```sh
+$ docker -v
+Docker version 19.03.12
+
+$ docker-compose -v
+docker-compose version 1.26.2
+```
+
+リポジトリをクローンします。
+```sh
+$ git clone https://github.com/tac0x2a/nayco.git
+$ cd nayco
+```
+
+
 ## 起動
+
 ```sh
 $ docker-compose up -d
 ```
+
+動作に必要なイメージをダウンロードするため、
+インターネットに接続可能な環境で初回起動してください。
 
  ## 停止
 ```sh
