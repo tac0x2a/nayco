@@ -83,7 +83,7 @@ Metabaseを利用するためにあ、初回アクセス時に、DWH(ClickHouse)
 
 上記をSaveすれば、Naycoに蓄積されたデータをMetabseで可視化する準備が整いました。(Metabaseのクロールが実行されるまでの間、実際のテーブルがMetabase上に表示されない場合があります)
 試しに、簡単な可視化をしてみましょう。Metabase上で `hello_nayco_001` テーブルが見えるようになったので、以下のような可視化(Question)を行います。
-Metabaseの使い方については、[Metabaseのドキュメント](https://www.metabase.com/docs/latest/getting-started.html)を参考にしてください。
+Metabaseの使い方については、[Metabaseのドキュメント](https://www.metabase.com/docs/latest/getting-started.html)を参照してください。
 
 ![](/doc/img/metabase_1.png)
 
@@ -444,23 +444,57 @@ SQLについては ClickHouseの[SQLリファレンス](https://clickhouse.tech/
 
 
 -------------------------------------------------
-# データの可視化
+# データの可視化と分析
+DWHに蓄積されたデータは、DBとのI/Fを持つツールなどから参照し、可視化や分析が可能です。
+
+### Metabaseによる可視化
+NaycoはClickHouseと接続可能なBIサービス [Metabase](https://www.metabase.com/) を内蔵しており、サービスやツールの追加なしに利用可能です。
+初回起動時にClickHouseをDBとして登録することで、以降ClickHouseに蓄積されたデータを参照することができます。
+
+Metabaseの使い方については、[Metabaseのドキュメント](https://www.metabase.com/docs/latest/getting-started.html)を参照してください。
+
+
+### 外部サービスからの接続
+ClickHouseはMySQL互換のI/F(wire protocol)をサポートしており、一般的なMySQLクライアントでポート`9004`に接続することでクエリできます。
+
 
 -------------------------------------------------
-# 管理
+# 管理/監視
+
+## ブローカの確認
+RabbitMQのWeb管理コンソール(`http://<NAYCO_HOST>:15672`)にアクセスすることで、メッセージの流入量や、Grebeによる処理の状況などを確認できます。デフォルトの認証情報は `guest`:`guest` です。
+
+## テーブルの管理
+DWHに作成されたテーブルは Uminoco(`http://<NAYCO_HOST>:5000`) で確認/管理することができます。
++ テーブルの確認: テーブルのスキーマ、データサイズ、データ圧縮率
++ テーブル名の変更
++ テーブルの削除
++ テーブルデータの他テーブルへのコピー
+
+
+#### テーブルのコピー
+Naycoは新しいスキーマのデータ(カラム数, カラム名, データ型など)を受け取ると、新たにテーブルを作成します。
+そのため、収集データを増やすなど入力データが変化すると、新旧のデータが別のテーブルに格納されてしまいます。
+その場合、Uminocoから、古いテーブルから新しく作られたテーブルへデータをコピーして引き継ぐことができます。
+
+![](/doc/img/uminoco_sample02.png)
+1. `http://<NAYCO_HOST>:5000/table_migration` へアクセスし、`Select Tables` でコピー元とコピー先のテーブルを指定します。
+2. 次に、`Select Columns` で、コピー先テーブルのカラムに格納する値を、コピー元テーブルのカラムから選択します。コピー元カラムが選択されていない場合、NULLまたは空の配列`[]` がコピーされます。
+3. データ型が一致しないなど、データによってはコピーに失敗する可能性がある場合、中央のアイコンが警告表示となります。
+4. カラムの選択が完了したら、`MIGRATE!` ボタンを押してデータコピーを行います。
+
+
+## コンテナの管理
+Naycoは全てのサービスがコンテナで実行されており、Portainer(`http://<NAYCO_HOST>:19000` )でコンテナの実行状況などを確認することができます。
+また、o-namazuのマーカファイルの更新をした場合など、コンテナの再起動や停止を行うことができます。
+
+Portainerの使い方については、[Portainer documentation](https://www.portainer.io/documentation/) を参照してください。
+
 
 -------------------------------------------------
-# データの活用
+# Naycoの利用例
 
--------------------------------------------------
-# その他
-
-
-
--------------------------------------------------
-# Contributing
-1. Fork it ( https://github.com/tac0x2a/nayco/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+例: 私の部屋の温湿度。休暇中にも関わらず、ほぼ毎日自宅に居ることがわかる。
+![](/doc/img/metabase_example.png)
+Node-Redで [Nature Remo](https://nature.global/)から取得した温度/湿度/照度を RabbitMQへ投入し、Metabaseで可視化しています。
+設定したのは Node-Red のデータ取得パイプラインと、Metabaseの画面だけです。途中のデータ変換やテーブル定義などの設定は不要です。
