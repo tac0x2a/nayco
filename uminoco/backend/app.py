@@ -178,7 +178,11 @@ def migraate_table():
             src_columns[idx] = '[]'
             continue
 
-        src_columns[idx] = 'NULL'
+        src_columns[idx] = None
+        dst_columns[idx] = None
+
+    src_columns = [s for s in src_columns if s is not None]
+    dst_columns = [s for s in dst_columns if s is not None]
 
     # Try to migrate table
     try:
