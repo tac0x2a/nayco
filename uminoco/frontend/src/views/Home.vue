@@ -2,7 +2,7 @@
   <div>
     <v-container>
       <v-banner>
-        <p class="display-1 text--primary">Now in shipbuilding...</p>
+        <p class="display-1 text--primary">Now in shipbuilding...🚢🔧</p>
         <template v-slot:actions>
           <v-btn
             text
@@ -17,6 +17,7 @@
         <v-col key="1" cols="12" sm="4">
           <v-card class="mx-auto">
             <v-card-text>
+              <v-icon>mdi-table-large</v-icon>
               <p class="display-1 text--primary">Manage Tables</p>
               <div class="text--primary">
                 You can rename and delete tables, see what storage and compression rates are being used.
@@ -24,6 +25,22 @@
             </v-card-text>
             <v-card-actions>
               <v-btn text color="indigo accent-4" to="/table">Open Tables</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+
+        <v-col key="1" cols="12" sm="4">
+          <v-card class="mx-auto">
+            <v-card-text>
+              <v-icon>mdi-table-large</v-icon>
+              <p class="display-1 text--primary">Migration Table Tool</p>
+              <div class="text--primary">
+                You can copy table data into other table.
+                This feature is expected to use when created new table by receiving schema similer to old one. You can integrate data into new table.
+              </div>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn text color="indigo accent-4" to="/table_migration">Open Migration Table Tool</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>

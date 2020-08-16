@@ -142,6 +142,61 @@ def drop_table(table_name=None):
     return jsonify({"message": "ok"}), 200
 
 
+@app.route('/api/v1/migrate_table', methods=["POST"])
+def migraate_table():
+    src_table_name = request.form.get("src_table_name", None)
+    dst_table_name = request.form.get("dst_table_name", None)
+    src_columns = json.loads(request.form.get("src_columns", None))
+    dst_columns = json.loads(request.form.get("dst_columns", None))
+
+    if src_table_name is None:
+        return jsonify({"message": "Source table name is not provided."}), 400
+
+    if dst_table_name is None:
+        return jsonify({"message": "Dstination table name is not provided."}), 400
+
+    if len(src_columns) != len(dst_columns):
+        return jsonify({"message": f"Column count is not equal. Src:{len(src_columns)}, Dst:{len(dst_columns)}"}), 400
+
+    # query columns for getting destination types
+    column_query = "SELECT name, type FROM system.columns WHERE table = %(table_name)s"
+    column_res = client.execute(column_query, {"table_name": dst_table_name})
+
+    dst_types = {}
+    for n, t in column_res:
+        dst_types[n] = t
+
+    for idx, c in enumerate(zip(src_columns, dst_columns)):
+        src_c, dst_c = c
+        dst_type = dst_types[dst_c]
+
+        if src_c is not None:
+            src_columns[idx] = f"`{__escape_symbol(src_c)}`"
+            continue
+
+        if dst_type.lower().startswith("array"):
+            src_columns[idx] = '[]'
+            continue
+
+        src_columns[idx] = None
+        dst_columns[idx] = None
+
+    src_columns = [s for s in src_columns if s is not None]
+    dst_columns = [s for s in dst_columns if s is not None]
+
+    # Try to migrate table
+    try:
+        src_columns_str = ",".join(src_columns)
+        dst_columns_str = ",".join([f"`{__escape_symbol(c)}`" for c in dst_columns])
+
+        select_query = f"SELECT {src_columns_str} FROM `{__escape_symbol(src_table_name)}`"
+        insert_query = f"INSERT INTO `{__escape_symbol(dst_table_name)}` ({dst_columns_str})"
+        result = client.execute(insert_query + " " + select_query)
+
+        return jsonify({"message": "ok", "query": insert_query + " " + select_query, "result": result}), 200
+    except Exception as ex:
+        return jsonify({"message": f"Failed in execution migrate query: {ex}"}), 500
+
 
 @app.route('/api/v1/disk_usage')
 def show_host_info():
@@ -154,6 +209,8 @@ def show_host_info():
 
 
 def __escape_symbol(symbol: str):
+    if type(symbol) is not str:
+        return symbol
     return symbol.replace('`', '\\`')
 
 if __name__ == '__main__':
