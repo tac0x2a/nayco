@@ -29,7 +29,10 @@
                   </v-row>
                 </div>
               </v-container>
-              <v-btn color="primary" @click="stepperModel = 2" :disabled="!!(!srcTableName || !dstTableName)">Continue</v-btn>
+              <v-btn color="primary" @click="stepperModel = 2" :disabled="!!(!srcTableName || !dstTableName)">Continue
+                <v-icon v-if="!!(!srcTableName || !dstTableName)" dark right>mdi-cancel</v-icon>
+                <v-icon v-else dark right>mdi-checkbox-marked-circle</v-icon>
+              </v-btn>
             </v-stepper-content>
 
             <!-- Step 2. Select Columns -->
@@ -42,69 +45,96 @@
 
                 <!-- Each columns -->
                 <div v-if="this.dstColumns">
+                  <v-card>
 
                   <!-- Tdbles -->
                   <v-row no-gutters>
-                    <v-col class="pa-0" key="1" cols="12" sm="1"><p class="headline mb-1"></p></v-col>
-                    <v-col class="pa-0" key="4" cols="12" sm="4">
-                      <v-card><p class="headline mb-1">{{this.srcTableName}}</p></v-card>
+                    <v-col class="pa-4" key="4" cols="12" sm="6">
+                      <p class="headline mb-1">{{this.srcTableName}}</p>
                     </v-col>
 
-                    <v-col class="pa-0" key="2" cols="12" sm="1"><p class="headline mb-1">👉</p></v-col>
+                    <v-col class="pa-4" key="2" cols="12" sm="1"><p class="headline mb-1">👉</p></v-col>
 
-                    <v-col class="pa-0" key="3" cols="12" sm="6">
-                      <v-card><p class="headline mb-1">{{this.dstTableName}}</p></v-card>
+                    <v-col class="pa-4" key="3" cols="12" sm="5">
+                      <p class="headline mb-1">{{this.dstTableName}}</p>
                     </v-col>
                   </v-row>
 
                   <!-- Header -->
-                  <v-card>
+
                     <v-row no-gutters>
-                      <v-col class="pa-1" key="1" cols="12" sm="1">No.</v-col>
-                      <v-col class="pa-1" key="6" cols="12" sm="3">Types</v-col>
-                      <v-col class="pa-1" key="2" cols="12" sm="2">Columns</v-col>
+                      <v-col class="pa-2" key="6" cols="12" sm="3">Types</v-col>
+                      <v-col class="pa-2" key="2" cols="12" sm="3">Columns</v-col>
 
-                      <v-col class="pa-1" key="3" cols="12" sm="1"></v-col>
+                      <v-col class="pa-2" key="3" cols="12" sm="1"></v-col>
 
-                      <v-col class="pa-1" key="4" cols="12" sm="2">Columns</v-col>
-                      <v-col class="pa-1" key="5" cols="12" sm="4">Types</v-col>
+                      <v-col class="pa-2" key="4" cols="12" sm="2">Columns</v-col>
+                      <v-col class="pa-2" key="5" cols="12" sm="3">Types</v-col>
                     </v-row>
-                  </v-card>
 
                   <!-- Each columns -->
-                  <v-card>
+
                     <div v-for="(item, index) in this.dstColumns" :key="item.position">
                       <v-row no-gutters>
-                        <v-col class="pa-1" key="1" cols="12" sm="1">{{item.position}}</v-col>
 
-                        <v-col class="pa-1" key="2" cols="12" sm="2">
-                          <v-chip v-if="selectedSrcColumnNames[index] && srcColumnsMap[selectedSrcColumnNames[index]]" class="ma-1" color="indigo" text-color="white">
-                            <v-avatar left><v-icon>{{getTypeIcon(srcColumnsMap[selectedSrcColumnNames[index]].type)}}</v-icon></v-avatar>
-                            {{srcColumnsMap[selectedSrcColumnNames[index]].type}}
-                          </v-chip>
-                          <v-chip v-else class="ma-1" color="gray" text-color="white">
-                            <v-avatar left><v-icon>{{getTypeIcon(null)}}</v-icon></v-avatar>
-                            NULL
-                          </v-chip>
+                        <!-- Source type -->
+                        <v-col class="pa-0" key="2" cols="12" sm="3">
+                          <div v-if="selectedSrcColumnNames[index] && getSourceColumn(index)">
+                            <v-chip class="ms-2" color="blue-grey" text-color="white">
+                              <v-avatar left><v-icon>{{getTypeIcon(getSourceColumn(index).type)}}</v-icon></v-avatar>
+                              {{getSourceColumn(index).type}}
+                            </v-chip>
+                          </div>
+                          <div v-else>
+                            <v-tooltip top>
+                              <template v-slot:activator="{ on, attrs }">
+                                <v-chip class="ms-2" color="blue-grey lighten-3" text-color="white" v-bind="attrs" v-on="on">
+                                  <v-avatar left><v-icon>{{getTypeIcon(null)}}</v-icon></v-avatar> NULL
+                                </v-chip>
+                              </template>
+                              <span>NULL will be used instead of source table values.</span>
+                            </v-tooltip>
+                          </div>
                         </v-col>
 
-                        <v-col class="pa-0" key="3" cols="12" sm="2">
+                        <!-- Source Column -->
+                        <v-col class="mt-0 mb-0" key="3" cols="12" sm="3">
                           <v-select :items="Object.keys(srcColumnsMap)" dense
-                          v-model="selectedSrcColumnNames[index]">
+                          v-model="selectedSrcColumnNames[index]"
+                          :clearable=true >
                           </v-select>
                         </v-col>
 
-                        <v-col class="pa-1" key="4" cols="12" sm="1">👉</v-col>
+                        <!-- Sep -->
+                        <v-col class="ms-0" key="4" cols="12" sm="1">
+                          <v-chip v-if="getTypeCompatibilityStatus(getSourceColumn(index), item.type) === 'ok'" class="ms-2" color="green" text-color="white">
+                            <v-avatar center><v-icon>mdi-check</v-icon></v-avatar>
+                          </v-chip>
+                          <div v-else>
+                            <v-tooltip top>
+                              <template v-slot:activator="{ on, attrs }">
+                                <v-chip  class="ms-2" color="warning" text-color="white" v-bind="attrs" v-on="on">
+                                  <v-avatar center><v-icon>mdi-alert</v-icon></v-avatar>
+                                </v-chip>
+                              </template>
+                              <span>Data type is not euqual. Data will be inserted depends on implementation of database.</span>
+                            </v-tooltip>
+                          </div>
+                        </v-col>
 
-                        <v-col class="pa-1" key="5" cols="12" sm="2">{{item.name}}</v-col>
-                        <v-col class="p1-1" key="6" cols="12" sm="4">
-                          <v-chip class="ma-1" color="indigo" text-color="white">
+                        <!-- Dst Column -->
+                        <v-col class="ms-0 mt-2" key="5" cols="12" sm="2">{{item.name}}</v-col>
+
+                        <!-- Dst Type -->
+                        <v-col class="ms-0" key="6" cols="12" sm="3">
+                          <v-chip class="ms2" color="blue-grey" text-color="white">
                             <v-avatar left><v-icon>
                               {{getTypeIcon(item.type)}}
                             </v-icon></v-avatar>
                             {{item.type}}
                           </v-chip>
                         </v-col>
+
                       </v-row>
                     </div> <!-- v-for="item in this.dstColumns" :key="item.position" -->
                   </v-card>
@@ -234,6 +264,18 @@ export default {
         }
       }
     },
+    getSourceColumn (index) {
+      return this.srcColumnsMap[this.selectedSrcColumnNames[index]]
+    },
+    getTypeCompatibilityStatus (fromType, toType) {
+      const tl = toType.toLowerCase()
+      if (tl.includes('str') || tl.includes('char')) return 'ok'
+      if (!fromType) return 'ok'
+
+      if (fromType.type === toType) return 'ok'
+
+      return 'warn'
+    },
     getTypeIcon (type) {
       if (type === null) return 'mdi-null'
 
@@ -270,7 +312,6 @@ export default {
       })
 
       this.isMigrating = true
-
       // Todo modal
     }
   }
