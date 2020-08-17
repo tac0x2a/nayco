@@ -97,13 +97,14 @@ services:
 
   # Node-RED
   node-red:
-    image: nodered/node-red-docker:v10
+    image: nodered/node-red:1.1.3-minimal
     hostname: nodered
     restart: always
     ports:
       - 1880:1880
     volumes:
       - ./volume/nodered/data:/data
+      - ./volume/storage_volume:/storage:z
     user: root:root
 
   # File Storage ----------------------------------------------------------------------------------
