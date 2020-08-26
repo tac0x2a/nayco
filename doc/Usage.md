@@ -199,6 +199,9 @@ $ docker-compose up -d
 In order to download the images needed to operate, the
 The first time you start the system, you must have an internet connection.
 
+You can custamize environment variable values will be passed to containsers.
+For example, you want to change container's timezone, enable `TZ` in `.env` file if you want to use specified time zone,
+
 ### Shutdown
 ```sh
 $ docker-compose down
