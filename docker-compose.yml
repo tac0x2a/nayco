@@ -10,7 +10,7 @@ services:
       - 15672:15672 # Web management console. Default account guest:guest
       - 1883:1883 # MQTT Port
     environment:
-      - TZ=${TZ}
+      - TZ
 
   # RabbitMQ to ClickHouse
   grebe:
@@ -22,7 +22,7 @@ services:
       - MQ_HOST=rabbitmq # RabbitMQ host
       - DB_HOST=clickhouse # Clickhouse host
       - SCHEMA_STORE=rdb # Schema on Clickhouse
-      - TZ=${TZ}
+      - TZ
     volumes:
       - ./volume/grebe/logs:/logs
       - ./volume/grebe/schemas:/schemas
@@ -33,7 +33,7 @@ services:
     hostname: onamazu
     restart: always
     environment:
-      - TZ=${TZ}
+      - TZ
     volumes:
       - ./volume/onamazu/logs:/logs
       - ./volume/storage_volume:/data:z
@@ -48,7 +48,7 @@ services:
       - 9004:9004 # MySQL Interface(wire protocol) port
       - 9000:9000 # Native port
     environment:
-      - TZ=${TZ}
+      - TZ
     volumes:
       - ./volume/clickhouse:/var/lib/clickhouse
 
@@ -60,7 +60,7 @@ services:
     ports:
       - 19000:9000
     environment:
-      - TZ=${TZ}
+      - TZ
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./volume/portainer/data:/data
@@ -75,7 +75,7 @@ services:
     labels:
       - "works.weave.role=system"
     environment:
-      - TZ=${TZ}
+      - TZ
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:rw"
     command:
@@ -93,7 +93,7 @@ services:
     environment:
       - MB_DB_FILE=/metabase-data/metabase.db
       - JAVA_TIMEZONE=Asia/Tokyo
-      - TZ=${TZ}
+      - TZ
     volumes:
       - ./volume/metabase:/metabase-data
 
@@ -105,8 +105,8 @@ services:
     ports:
       - 8080:80
     environment:
-      CH_HOST: clickhouse:8123
-      TZ: ${TZ}
+      - CH_HOST=clickhouse:8123
+      - TZ
 
   # Node-RED
   node-red:
@@ -116,7 +116,7 @@ services:
     ports:
       - 1880:1880
     environment:
-      TZ: ${TZ}
+      - TZ
     volumes:
       - ./volume/nodered/data:/data
       - ./volume/storage_volume:/storage:z
@@ -133,7 +133,7 @@ services:
     ports:
       - "8082:80"
     environment:
-      TZ: ${TZ}
+      - TZ
     volumes:
       - ./volume/storage_volume:/srv:z
 
@@ -152,7 +152,7 @@ services:
     stdin_open: true
     tty: true
     environment:
-      TZ: ${TZ}
+      - TZ
     volumes:
       - ./volume/storage_volume:/mnt/storage:z
     command: '-s "nayco;/mnt/storage;yes;no;no;nayco" -u "nayco;nayco" -p -g "hide dot files = no"'
@@ -172,8 +172,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      # TZ: "Asia/Tokyo"
-      FLASK_ENV: "productiont"
-      DB_HOST: "clickhouse"
-      DB_PORT: 9000
-      TZ: ${TZ}
+      - FLASK_ENV=productiont
+      - DB_HOST=clickhouse
+      - DB_PORT=9000
+      - TZ
