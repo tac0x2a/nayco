@@ -14,7 +14,7 @@ services:
 
   # RabbitMQ to ClickHouse
   grebe:
-    image: tac0x2a/grebe:v1.1.2
+    image: tac0x2a/grebe:v1.2.0
     hostname: grebe
     restart: always
     environment:
@@ -23,6 +23,7 @@ services:
       - DB_HOST=clickhouse # Clickhouse host
       - SCHEMA_STORE=rdb # Schema on Clickhouse
       - TZ
+      - TZ_STR=${TZ}
     volumes:
       - ./volume/grebe/logs:/logs
       - ./volume/grebe/schemas:/schemas
