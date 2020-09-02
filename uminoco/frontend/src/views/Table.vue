@@ -39,19 +39,25 @@
             <div>Table</div>
             <p class="display-1 text--primary">{{tableData.name}}</p>
             <div v-if="this.tableCreated" >Created at: {{this.tableCreated}} </div>
+            <div v-if="this.grebeSourceId" >Grebe Source ID: {{this.grebeSourceId}} </div>
           </v-card-text>
         </v-card>
       </v-container>
 
       <v-container>
         <v-row no-gutters>
-          <v-col key="1" cols="12" sm="4">
+          <v-col key="1" cols="12" sm="3">
             <v-card class="pa-2" tile><v-card-text><div>Rows</div><p class="headline mb-1">{{tableData.total_rows}}</p></v-card-text></v-card>
           </v-col>
-          <v-col key="2" cols="12" sm="4">
+          <v-col key="2" cols="12" sm="3">
+            <div v-if="this.lastUpdated">
+              <v-card class="pa-2" tile><v-card-text><div>Last Updated</div><p class="headline mb-1">{{ lastUpdated }}</p></v-card-text></v-card>
+            </div>
+          </v-col>
+          <v-col key="3" cols="12" sm="3">
             <v-card class="pa-2" tile><v-card-text><div>Bytes[MB]</div><p class="headline mb-1">{{(tableData.total_bytes/1024.0/1024.0).toFixed(4)}}</p></v-card-text></v-card>
           </v-col>
-          <v-col key="3" cols="12" sm="4">
+          <v-col key="4" cols="12" sm="3">
             <v-card class="pa-2" tile><v-card-text><div>Compression Ratio</div><div class="headline mb-1">{{(tableData.compression_ratio * 100).toFixed(2)}} %</div></v-card-text></v-card>
           </v-col>
         </v-row>
@@ -77,14 +83,8 @@
               {{(item.compression_ratio * 100).toFixed(2)}} %
             </template>
 
-            <template v-slot:[`item.data_uncompressed_bytes`]="{item}" >
-              {{(item.data_uncompressed_bytes/1024.0).toFixed(2)}}
-            </template>
-            <template v-slot:[`item.data_compressed_bytes`]="{item}" >
-              {{(item.data_compressed_bytes/1024.0).toFixed(2)}}
-            </template>
-            <template v-slot:[`item.marks_bytes`]="{item}" >
-              {{(item.marks_bytes/1024.0).toFixed(2)}}
+            <template v-slot:[`item.recent_value`]="{item}" >
+              {{ formatRecentValue(item) }}
             </template>
 
           </v-data-table>
@@ -195,9 +195,7 @@ export default {
       { text: 'Type', sortable: true, value: 'type' },
       { text: 'Size [KB]', sortable: true, value: 'data_compressed_bytes' },
       { text: 'Compression Ratio', sortable: true, value: 'compression_ratio' },
-      { text: 'Marks Size [KB]', sortable: true, value: 'marks_bytes' },
-      { text: 'Original Size [KB]', sortable: true, value: 'data_uncompressed_bytes' },
-      { text: 'Position', sortable: true, value: 'position' }
+      { text: 'Recent Value', sortable: false, value: 'recent_value' }
     ],
 
     alert: false,
@@ -217,6 +215,13 @@ export default {
       const createAt = this.tableData?.grebe_schema?.__create_at
       if (!createAt) return null
       return new Date(createAt).toLocaleString()
+    },
+    lastUpdated() {
+      const d = this.tableData.columns.find(e => e.name === '__create_at').recent_value
+      return new Date(d).toLocaleString()
+    },
+    grebeSourceId() {
+      return this.tableData?.grebe_schema?.source_id
     }
   },
 
@@ -262,6 +267,18 @@ export default {
         this.alertMessage = err?.response?.data?.message
         this.alert = true
       })
+    },
+    formatRecentValue(item) {
+      if (item.recent_value == null) return 'NULL'
+
+      if (item.type.includes('DateTime')) {
+        if (Array.isArray(item.recent_value)) {
+          return item.recent_value.map(d => new Date(d).toLocaleString())
+        } else {
+          return new Date(item.recent_value).toLocaleString()
+        }
+      }
+      return item.recent_value
     }
   }
 }
