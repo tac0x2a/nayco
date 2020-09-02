@@ -49,7 +49,7 @@ services:
       - 9004:9004 # MySQL Interface(wire protocol) port
       - 9000:9000 # Native port
     environment:
-      - TZ
+      - TZ:UTC
     volumes:
       - ./volume/clickhouse:/var/lib/clickhouse
 
