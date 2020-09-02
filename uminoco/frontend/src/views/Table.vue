@@ -50,8 +50,8 @@
             <v-card class="pa-2" tile><v-card-text><div>Rows</div><p class="headline mb-1">{{tableData.total_rows}}</p></v-card-text></v-card>
           </v-col>
           <v-col key="2" cols="12" sm="3">
-            <div v-if="this.lastInsert">
-              <v-card class="pa-2" tile><v-card-text><div>Last Inserted</div><p class="headline mb-1">{{ lastInsert }}</p></v-card-text></v-card>
+            <div v-if="this.lastUpdated">
+              <v-card class="pa-2" tile><v-card-text><div>Last Updated</div><p class="headline mb-1">{{ lastUpdated }}</p></v-card-text></v-card>
             </div>
           </v-col>
           <v-col key="3" cols="12" sm="3">
@@ -216,7 +216,7 @@ export default {
       if (!createAt) return null
       return new Date(createAt).toLocaleString()
     },
-    lastInsert() {
+    lastUpdated() {
       const d = this.tableData.columns.find(e => e.name === '__create_at').recent_value
       return new Date(d).toLocaleString()
     },
