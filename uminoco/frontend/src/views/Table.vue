@@ -77,14 +77,8 @@
               {{(item.compression_ratio * 100).toFixed(2)}} %
             </template>
 
-            <template v-slot:[`item.data_uncompressed_bytes`]="{item}" >
-              {{(item.data_uncompressed_bytes/1024.0).toFixed(2)}}
-            </template>
-            <template v-slot:[`item.data_compressed_bytes`]="{item}" >
-              {{(item.data_compressed_bytes/1024.0).toFixed(2)}}
-            </template>
-            <template v-slot:[`item.marks_bytes`]="{item}" >
-              {{(item.marks_bytes/1024.0).toFixed(2)}}
+            <template v-slot:[`item.recent_value`]="{item}" >
+              {{ formatRecentValue(item) }}
             </template>
 
           </v-data-table>
@@ -195,9 +189,7 @@ export default {
       { text: 'Type', sortable: true, value: 'type' },
       { text: 'Size [KB]', sortable: true, value: 'data_compressed_bytes' },
       { text: 'Compression Ratio', sortable: true, value: 'compression_ratio' },
-      { text: 'Marks Size [KB]', sortable: true, value: 'marks_bytes' },
-      { text: 'Original Size [KB]', sortable: true, value: 'data_uncompressed_bytes' },
-      { text: 'Position', sortable: true, value: 'position' }
+      { text: 'Recent Value', sortable: false, value: 'recent_value' }
     ],
 
     alert: false,
@@ -262,6 +254,18 @@ export default {
         this.alertMessage = err?.response?.data?.message
         this.alert = true
       })
+    },
+    formatRecentValue(item) {
+      if (item.recent_value == null) return 'NULL'
+
+      if (item.type.includes('DateTime')) {
+        if (Array.isArray(item.recent_value)) {
+          return item.recent_value.map(d => new Date(d).toLocaleString())
+        } else {
+          return new Date(item.recent_value).toLocaleString()
+        }
+      }
+      return item.recent_value
     }
   }
 }

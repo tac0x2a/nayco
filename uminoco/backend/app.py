@@ -72,6 +72,20 @@ def show_table(table_name=None):
 
     response["columns"] = column_response
 
+    # Recent Record
+    column_names = [c['name'] for c in column_response]
+    recent_data_query = f"SELECT { (','.join(['`' + __escape_symbol(n) + '`' for n in column_names])) } FROM `{__escape_symbol(table_name)}` ORDER BY __create_at DESC LIMIT 1"
+    recent_data_res = client.execute(recent_data_query)
+    recent_data = {}
+    if len(recent_data_res) > 0:
+        recent_data = {k: v for k, v in zip(column_names, recent_data_res[0])}
+
+    for c in response["columns"]:
+        name = c['name']
+        if name in recent_data:
+            c['recent_value'] = recent_data[name]
+
+
     # Schema info
     try:
         schema_keys = ["__create_at", "source_id", "schema", "table_name"]
