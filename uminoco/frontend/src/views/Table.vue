@@ -39,19 +39,25 @@
             <div>Table</div>
             <p class="display-1 text--primary">{{tableData.name}}</p>
             <div v-if="this.tableCreated" >Created at: {{this.tableCreated}} </div>
+            <div v-if="this.grebeSourceId" >Grebe Source ID: {{this.grebeSourceId}} </div>
           </v-card-text>
         </v-card>
       </v-container>
 
       <v-container>
         <v-row no-gutters>
-          <v-col key="1" cols="12" sm="4">
+          <v-col key="1" cols="12" sm="3">
             <v-card class="pa-2" tile><v-card-text><div>Rows</div><p class="headline mb-1">{{tableData.total_rows}}</p></v-card-text></v-card>
           </v-col>
-          <v-col key="2" cols="12" sm="4">
+          <v-col key="2" cols="12" sm="3">
+            <div v-if="this.lastInsert">
+              <v-card class="pa-2" tile><v-card-text><div>Last Inserted</div><p class="headline mb-1">{{ lastInsert }}</p></v-card-text></v-card>
+            </div>
+          </v-col>
+          <v-col key="3" cols="12" sm="3">
             <v-card class="pa-2" tile><v-card-text><div>Bytes[MB]</div><p class="headline mb-1">{{(tableData.total_bytes/1024.0/1024.0).toFixed(4)}}</p></v-card-text></v-card>
           </v-col>
-          <v-col key="3" cols="12" sm="4">
+          <v-col key="4" cols="12" sm="3">
             <v-card class="pa-2" tile><v-card-text><div>Compression Ratio</div><div class="headline mb-1">{{(tableData.compression_ratio * 100).toFixed(2)}} %</div></v-card-text></v-card>
           </v-col>
         </v-row>
@@ -209,6 +215,13 @@ export default {
       const createAt = this.tableData?.grebe_schema?.__create_at
       if (!createAt) return null
       return new Date(createAt).toLocaleString()
+    },
+    lastInsert() {
+      const d = this.tableData.columns.find(e => e.name === '__create_at').recent_value
+      return new Date(d).toLocaleString()
+    },
+    grebeSourceId() {
+      return this.tableData?.grebe_schema?.source_id
     }
   },
 
