@@ -3203,8 +3203,9 @@ DomainPosition.prototype.setPosition = function(d, dim) {
 DomainPosition.prototype.shiftRightBy = function(exitingDomainDim) {
 	"use strict";
 
+	const p = this.positions
 	this.positions.each(function(value, key) {
-		this.set(key, value - exitingDomainDim);
+		p.set(key, value - exitingDomainDim);
 	});
 
 	var domains = this.getKeys();
@@ -3214,8 +3215,9 @@ DomainPosition.prototype.shiftRightBy = function(exitingDomainDim) {
 DomainPosition.prototype.shiftLeftBy = function(enteringDomainDim) {
 	"use strict";
 
-	this.positions.forEach(function(key, value) {
-		this.set(key, value + enteringDomainDim);
+	const p = this.positions
+	this.positions.each(function(value, key) {
+		p.set(key, value + enteringDomainDim);
 	});
 
 	var domains = this.getKeys();
