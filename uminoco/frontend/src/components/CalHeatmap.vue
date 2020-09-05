@@ -59,7 +59,6 @@ export default {
           subDomainDateFormat: '%Y-%m-%d',
           subDomainTextFormat: '%d',
           start: startAt,
-          formatNumber: (v) => v.toInt,
           range: 4,
           label: {
             position: 'bottom'
