@@ -16,6 +16,14 @@ export default {
     })
   },
 
+  calHeatmapMax (tableName, callback, errorCallback) {
+    axios.get('/api/v1/table/' + tableName + '/cal-heatmap-max').then((res) => {
+      callback(res.data)
+    }).catch((err) => {
+      errorCallback(err)
+    })
+  },
+
   renameTable (currentTableName, newTableName, callback, errorCallback) {
     const param = new FormData()
     param.set('new_table_name', newTableName)

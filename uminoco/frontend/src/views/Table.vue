@@ -47,18 +47,23 @@
       <v-container>
         <v-row no-gutters>
           <v-col key="1" cols="12" sm="3">
-            <v-card class="pa-2" tile><v-card-text><div>Rows</div><p class="headline mb-1">{{tableData.total_rows}}</p></v-card-text></v-card>
+            <v-card class="pa-0" tile><v-card-text><div>Rows</div><p class="headline mb-1">{{tableData.total_rows}}</p></v-card-text></v-card>
           </v-col>
           <v-col key="2" cols="12" sm="3">
             <div v-if="this.lastUpdated">
-              <v-card class="pa-2" tile><v-card-text><div>Last Updated</div><p class="headline mb-1">{{ lastUpdated }}</p></v-card-text></v-card>
+              <v-card class="pa-0" tile><v-card-text><div>Last Updated</div><p class="headline mb-1">{{ lastUpdated }}</p></v-card-text></v-card>
             </div>
           </v-col>
-          <v-col key="3" cols="12" sm="3">
-            <v-card class="pa-2" tile><v-card-text><div>Bytes[MB]</div><p class="headline mb-1">{{(tableData.total_bytes/1024.0/1024.0).toFixed(4)}}</p></v-card-text></v-card>
+          <v-col key="3" cols="12" sm="6">
+            <v-card class="pa-0" tile><v-card-text><cal-heatmap :tableName="tableName"></cal-heatmap></v-card-text></v-card>
           </v-col>
-          <v-col key="4" cols="12" sm="3">
-            <v-card class="pa-2" tile><v-card-text><div>Compression Ratio</div><div class="headline mb-1">{{(tableData.compression_ratio * 100).toFixed(2)}} %</div></v-card-text></v-card>
+        </v-row>
+        <v-row no-gutters>
+          <v-col key="1" cols="12" sm="6">
+            <v-card class="pa-0" tile><v-card-text><div>Bytes[MB]</div><p class="headline mb-1">{{(tableData.total_bytes/1024.0/1024.0).toFixed(4)}}</p></v-card-text></v-card>
+          </v-col>
+          <v-col key="2" cols="12" sm="6">
+            <v-card class="pa-0" tile><v-card-text><div>Compression Ratio</div><div class="headline mb-1">{{(tableData.compression_ratio * 100).toFixed(2)}} %</div></v-card-text></v-card>
           </v-col>
         </v-row>
       </v-container>
@@ -177,9 +182,12 @@
 
 <script>
 import Clickhouse from '@/api/clickhouse.js'
+import CalHeatmap from '@/components/CalHeatmap.vue'
 
 export default {
-  components: {},
+  components: {
+    CalHeatmap
+  },
 
   data: () => ({
     breadcrumbs: [
