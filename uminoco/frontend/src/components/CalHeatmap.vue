@@ -1,15 +1,19 @@
 <template>
   <div>
 
-    <div v-show="max">
-      <div id="cal-heatmap"></div>
-      <v-btn id="prev" x-small color="primary" dark>&lt;</v-btn>
-      <v-btn v-on:click="reset" id="reset" x-small color="primary" dark>now</v-btn>
-      <v-btn id="next" x-small color="primary" dark>&gt;</v-btn>
-    </div>
-    <div v-show="!max">
-      loading... {{this.failer}}
-    </div>
+      <div v-show="max">
+        <center>
+          <div id="cal-heatmap"></div>
+        </center>
+        <!-- TODO: Fix cal-heatmap navigation bugs -->
+        <!-- <v-btn id="prev" x-small color="primary" dark>&lt;</v-btn>
+        <v-btn v-on:click="reset" id="reset" x-small color="primary" dark>now</v-btn>
+        <v-btn id="next" x-small color="primary" dark>&gt;</v-btn> -->
+      </div>
+      <div v-show="!max">
+        loading... {{this.failer}}
+      </div>
+
   </div>
 </template>
 
@@ -50,21 +54,22 @@ export default {
         const startAt = new Date()
         startAt.setMonth(startAt.getMonth() - 3)
         cal.init({
-          cellSize: 16,
+          cellSize: 12,
           domain: 'month',
           subdomain: 'day',
+          domainLabelFormat: '%b',
           subDomainDateFormat: '%Y-%m-%d',
           subDomainTextFormat: '%d',
           start: startAt,
+          formatNumber: (v) => v.toInt,
           range: 4,
           label: {
             position: 'bottom'
           },
           animationDuration: 100,
-          tooltip: true,
           data: '/api/v1/table/' + this.tableName + '/cal-heatmap?start={{t:start}}&end={{t:end}}',
           displayLegend: false,
-          itemName: ['data'],
+          itemName: ['data', 'data'],
           previousSelector: '#prev',
           nextSelector: '#next',
           legend: [0, this.max * 0.2, this.max * 0.4, this.max * 0.6, this.max * 0.8, this.max],
@@ -77,8 +82,7 @@ export default {
   methods: {
     reset() {
       if (cal) {
-        // cal.rewind()
-        cal.next()
+        cal.rewind()
       }
     }
   }

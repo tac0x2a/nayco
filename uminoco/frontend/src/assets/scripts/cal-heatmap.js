@@ -1721,7 +1721,7 @@ CalHeatMap.prototype = {
 	// FORMATTER																//
 	// =========================================================================//
 
-	formatNumber: d3.format(",g"),
+	formatNumber: d3.format(".0"),
 
 	formatDate: function(d, format) {
 		"use strict";
@@ -1757,7 +1757,7 @@ CalHeatMap.prototype = {
 				value = 0;
 			}
 			var object = {
-				count: this.formatNumber(value),
+				count: value.toFixed(),
 				name: this.options.itemName[(value !== 1 ? 1: 0)],
 				connector: this._domainType[this.options.subDomain].format.connector,
 				date: this.formatDate(new Date(d.t), this.options.subDomainDateFormat)
@@ -2800,7 +2800,7 @@ CalHeatMap.prototype = {
 		if (options.dayLabel && options.domain === "month" && options.subDomain === "day") {
 			dayLabelWidth = options.cellSize + options.cellPadding;
 		}
-		
+
 		this.root.transition().duration(options.animationDuration)
 			.attr("width", function() {
 				if (options.legendVerticalPosition === "middle" || options.legendVerticalPosition === "center") {
@@ -3321,8 +3321,8 @@ Legend.prototype.redraw = function(width) {
 				selection.attr("fill", options.legendColors.base);
 			}
 		});
-	
-	
+
+
 	legendEnter.append("title");
 
 	var legendUpdate = legendItem.merge(legendEnter);
