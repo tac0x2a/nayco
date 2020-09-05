@@ -2,9 +2,7 @@
   <div>
 
       <div v-show="max">
-        <center>
-          <div id="cal-heatmap"></div>
-        </center>
+        <div id="cal-heatmap"></div>
         <!-- TODO: Fix cal-heatmap navigation bugs -->
         <!-- <v-btn id="prev" x-small color="primary" dark>&lt;</v-btn>
         <v-btn v-on:click="reset" id="reset" x-small color="primary" dark>now</v-btn>
@@ -66,10 +64,11 @@ export default {
           label: {
             position: 'bottom'
           },
+          tooltip: true,
           animationDuration: 100,
           data: '/api/v1/table/' + this.tableName + '/cal-heatmap?start={{t:start}}&end={{t:end}}',
           displayLegend: false,
-          itemName: ['data', 'data'],
+          itemName: ['data<br>', 'data<br>'],
           previousSelector: '#prev',
           nextSelector: '#next',
           legend: [0, this.max * 0.25, this.max * 0.50, this.max * 0.75, this.max],
