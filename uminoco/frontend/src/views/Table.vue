@@ -260,6 +260,7 @@ export default {
       this.isDialogEditable = this.renameDialog = false
 
       Clickhouse.renameTable(currentTableName, newTableName, res => {
+        this.tableData = null
         this.$router.push({ name: 'Table', params: { tableName: newTableName } })
       },
       err => {
