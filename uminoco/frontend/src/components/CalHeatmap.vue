@@ -72,8 +72,8 @@ export default {
           itemName: ['data', 'data'],
           previousSelector: '#prev',
           nextSelector: '#next',
-          legend: [0, this.max * 0.2, this.max * 0.4, this.max * 0.6, this.max * 0.8, this.max],
-          legendColors: ['#ecf5e2', '#232181']
+          legend: [0, this.max * 0.25, this.max * 0.50, this.max * 0.75, this.max],
+          legendColors: ['#FFFF99', '#FF9922']
         })
       }
     }
