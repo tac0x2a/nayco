@@ -16,7 +16,7 @@
 <script>
 import Clickhouse from '@/api/clickhouse.js'
 // import CalHeatMap from 'cal-heatmap'
-import CalHeatMap from '@/assets/scripts/cal-heatmap.min.js'
+import CalHeatMap from '@/assets/scripts/cal-heatmap.js'
 
 var cal = null
 
