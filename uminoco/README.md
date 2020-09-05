@@ -18,8 +18,8 @@ In root directory
 
 ```sh
 cd $NAYCO_ROOT
-$ docker-compose build
-$ docker-compose up -d
+$ docker-compose build --no-cache
+$ docker-compose up
 ```
 
 + Uminoco http://host:5000
