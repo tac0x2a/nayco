@@ -113,9 +113,13 @@ def show_count_table(table_name=None):
 
     response = {}
 
+    timezone = 'UTC'
+    if 'TZ' in os.environ:
+        timezone = os.environ['TZ']
+
     try:
-        recent_data_query = f"select toInt32(min(__create_at)), count(0) count, toDate(__create_at) as day from `{__escape_symbol(table_name)}`  where %(start)s <= toInt32(__create_at) AND %(end)s >= toInt32(__create_at) GROUP BY day"
-        recent_data_res = client.execute(recent_data_query, {"start": start_s, "end": end_s})
+        recent_data_query = f"select toInt32(min(__create_at)), count(0) count, toDate(__create_at, %(tz)s) as day from `{__escape_symbol(table_name)}`  where %(start)s <= toInt32(__create_at) AND %(end)s >= toInt32(__create_at) GROUP BY day"
+        recent_data_res = client.execute(recent_data_query, {"start": start_s, "end": end_s, 'tz': timezone})
 
         for r in recent_data_res:
             response[str(r[0])] = r[1]
@@ -127,18 +131,21 @@ def show_count_table(table_name=None):
 
 @app.route('/api/v1/table/<table_name>/cal-heatmap-max')
 def show_count_table_max(table_name=None):
-
     response = {}
+
+    timezone = 'UTC'
+    if 'TZ' in os.environ:
+        timezone = os.environ['TZ']
+
     try:
-        query = f"SELECT max(count) from (SELECT toDate(__create_at) as day, COUNT(0) count from `{__escape_symbol(table_name)}`  GROUP BY day)"
-        res = client.execute(query)
+        query = f"SELECT max(count) from (SELECT toDate(__create_at, %(tz)s ) as day, COUNT(0) count from `{__escape_symbol(table_name)}`  GROUP BY day)"
+        res = client.execute(query, {'tz': timezone})
         for r in res:
             response['max'] = int(r[0])
     except Exception as ex:
         return jsonify({"message": f"Failed in execution rename query: {ex}"}), 500
 
     return jsonify(response), 200
-
 
 
 @app.route('/api/v1/table/<src_table_name>/rename', methods=["POST"])

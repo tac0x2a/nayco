@@ -226,7 +226,8 @@ export default {
     tableCreated() {
       const createAt = this.tableData?.grebe_schema?.__create_at
       if (!createAt) return null
-      return new Date(createAt).toLocaleString()
+      var moment = require('moment')
+      return moment(new Date(createAt)).format('YYYY-MM-DD HH:mm:ss')
     },
     lastUpdated() {
       const d = this.tableData.columns.find(e => e.name === '__create_at').recent_value
@@ -260,6 +261,7 @@ export default {
       this.isDialogEditable = this.renameDialog = false
 
       Clickhouse.renameTable(currentTableName, newTableName, res => {
+        this.tableData = null
         this.$router.push({ name: 'Table', params: { tableName: newTableName } })
       },
       err => {
@@ -284,10 +286,11 @@ export default {
       if (item.recent_value == null) return 'NULL'
 
       if (item.type.includes('DateTime')) {
+        var moment = require('moment')
         if (Array.isArray(item.recent_value)) {
-          return item.recent_value.map(d => new Date(d).toLocaleString())
+          return item.recent_value.map(d => moment(new Date(d)).format('YYYY-MM-DD HH:mm:ss'))
         } else {
-          return new Date(item.recent_value).toLocaleString()
+          return moment(new Date(item.recent_value)).format('YYYY-MM-DD HH:mm:ss')
         }
       }
       return item.recent_value
