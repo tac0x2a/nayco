@@ -23,8 +23,9 @@ def index(path):
 # -------------- API --------------
 @app.route('/api/v1/table/')
 def show_tables():
-    keys = ['name', 'engine', 'total_rows', 'total_bytes']
-    query = f"SELECT {', '.join(keys)} FROM system.tables WHERE database = %(db_name)s AND primary_key = '__create_at'"
+    keys = ['name', 'engine', 'total_rows', 'total_bytes', '__create_at', 'source_id']
+    query = f"SELECT {', '.join(keys)} FROM system.tables as sys JOIN schema_table scm ON scm.table_name = sys.name  WHERE sys.database = %(db_name)s AND sys.primary_key = '__create_at'"
+
     res = client.execute(query, {'db_name': str(DB_NAME)})
 
     res_map_list = []
@@ -32,7 +33,7 @@ def show_tables():
         table = {k: v for k, v in zip(keys, list(r))}
         res_map_list.append(table)
 
-    return json.dumps(res_map_list), 200  # json.dumps(res)
+    return jsonify(res_map_list), 200
 
 
 @app.route('/api/v1/table/<table_name>')
