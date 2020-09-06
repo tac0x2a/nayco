@@ -68,6 +68,7 @@ export default {
   }),
   mounted() {
     Clickhouse.listTables(res => {
+      res.forEach(r => { r.__create_at = new Date(r.__create_at).getTime() })
       this.tables = res
     })
   },
