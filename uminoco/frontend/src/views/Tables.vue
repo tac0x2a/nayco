@@ -27,6 +27,9 @@
           <template v-slot:[`item.total_bytes`]="{item}" >
             {{(item.total_bytes / 1024 / 1024).toFixed(3)}} MB
           </template>
+          <template v-slot:[`item.__create_at`]="{item}" >
+            {{createAtFormat(item.__create_at)}}
+          </template>
         </v-data-table>
 
         <v-data-table
@@ -55,8 +58,9 @@ export default {
     headers: [
       { text: 'Table Name', sortable: true, value: 'name', align: 'start' },
       { text: 'Row Count', sortable: true, value: 'total_rows' },
-      { text: 'Table size [Byte]', sortable: true, value: 'total_bytes' },
-      { text: 'Engine', sortable: true, value: 'engine' }
+      { text: 'Table Size', sortable: true, value: 'total_bytes' },
+      { text: 'Grebe Source ID', sortable: true, value: 'source_id' },
+      { text: 'Created At', sortable: true, value: '__create_at' }
     ],
     tables: null,
     // tables: null,
@@ -66,6 +70,12 @@ export default {
     Clickhouse.listTables(res => {
       this.tables = res
     })
+  },
+  methods: {
+    createAtFormat(createAt) {
+      var moment = require('moment')
+      return moment(new Date(createAt)).format('YYYY-MM-DD HH:mm:ss')
+    }
   }
 }
 </script>
