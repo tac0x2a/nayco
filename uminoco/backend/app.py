@@ -263,6 +263,20 @@ def migraate_table():
         return jsonify({"message": f"Failed in execution migrate query: {ex}"}), 500
 
 
+@app.route('/api/v1/source_types/')
+def source_settings():
+    query = "SELECT source_id, JSONExtractRaw(source_setting, 'types') as types, __create_at from __source_settings WHERE visitParamHas(source_setting, 'types') = 1 and isValidJSON(source_setting) ORDER BY source_id"
+    res = client.execute(query)
+
+    res_map = {}
+    for r in res:
+        s, t, c = r
+        res_map[s] = {'types': json.loads(t), '__create_at': c}
+
+    return jsonify(res_map), 200
+
+
+
 @app.route('/api/v1/disk_usage')
 def show_host_info():
     keys = ['db_name', 'free_space', 'total_spaces']
