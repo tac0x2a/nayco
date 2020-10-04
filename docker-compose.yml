@@ -9,14 +9,17 @@ services:
     ports:
       - 15672:15672 # Web management console. Default account guest:guest
       - 1883:1883 # MQTT Port
+      - 5672:5672 # RabbitMQ Port for debugging
     environment:
       - TZ
 
   # RabbitMQ to ClickHouse
   grebe:
-    image: tac0x2a/grebe:v1.2.0
+    image: tac0x2a/grebe:v1.3.1
     hostname: grebe
     restart: always
+    ports:
+      - 8888:8888 # Web API
     environment:
       - MQ_QNAME=nayco # Queue name to subscribe on RabbitMQ
       - MQ_HOST=rabbitmq # RabbitMQ host
@@ -24,6 +27,7 @@ services:
       - SCHEMA_STORE=rdb # Schema on Clickhouse
       - TZ
       - TZ_STR=${TZ}
+      - API_PORT=8888
     volumes:
       - ./volume/grebe/logs:/logs
       - ./volume/grebe/schemas:/schemas
@@ -176,4 +180,6 @@ services:
       - FLASK_ENV=productiont
       - DB_HOST=clickhouse
       - DB_PORT=9000
+      - GREBE_HOST=grebe
+      - GREBE_PORT=8888
       - TZ

@@ -55,5 +55,31 @@ export default {
     }).catch((err) => {
       errorCallback(err)
     })
+  },
+
+  listSources(callback, errorCallback) {
+    axios.get('/api/v1/source/').then((res) => {
+      callback(res.data)
+    }).catch((err) => {
+      errorCallback(err)
+    })
+  },
+
+  sourceSpecifiedTypes(sourceId, callback, errorCallback) {
+    axios.get('/api/v1/source_types/' + sourceId).then((res) => {
+      callback(res.data)
+    }).catch((err) => {
+      errorCallback(err)
+    })
+  },
+
+  updateSourceTypes(sourceId, sourceTypes, callback, errorCallback) {
+    const param = new FormData()
+    param.set('new_specified_types', JSON.stringify(sourceTypes))
+    axios.post('/api/v1/source_types/' + sourceId + '/' + 'apply', param).then((res) => {
+      callback(res.data)
+    }).catch((err) => {
+      errorCallback(err)
+    })
   }
 }
