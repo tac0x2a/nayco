@@ -1,7 +1,9 @@
 import os
 import json
-from clickhouse_driver import Client
+import requests
+import time
 
+from clickhouse_driver import Client
 from flask import Flask, render_template, jsonify, request
 
 app = Flask(__name__, static_folder='../frontend/dist/static', template_folder='../frontend/dist')
@@ -9,6 +11,9 @@ app = Flask(__name__, static_folder='../frontend/dist/static', template_folder='
 DB_HOST = os.environ['DB_HOST']
 DB_PORT = os.environ['DB_PORT']
 DB_NAME = os.environ.get('DB_NAME', 'default')
+
+GREBE_HOST = os.environ['GREBE_HOST']
+GREBE_PORT = os.environ['GREBE_PORT']
 
 client = Client(DB_HOST, DB_PORT)
 
@@ -369,7 +374,12 @@ def source_types_apply(source_id=None):
     except Exception as ex:
         return jsonify({"message": f"Failed to apply...: {ex}"}), 500
 
-    #Todo: reload grebe
+    try:
+        time.sleep(0.5)
+        grebe_reload_url = f"http://{GREBE_HOST}:{GREBE_PORT}/source_settings_cache/reload"
+        res = requests.get(grebe_reload_url)
+    except Exception as ex:
+        return jsonify({"message": f"Failed to apply...: {ex}"}), 500
 
     return jsonify({"message": "ok"}), 200
 
