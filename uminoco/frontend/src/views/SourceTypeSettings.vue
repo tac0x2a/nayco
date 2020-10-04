@@ -100,8 +100,8 @@ export default {
         return { text: name, sortable: true, value: name }
       })
       this.headers = [
-        { text: 'Column', sortable: true, value: '__column_name__' },
-        { text: 'Corrected Type', sortable: true, value: '__corrected_type__' }
+        { text: 'Column', sortable: true, value: '__column_name__', divider: true, align: 'end' },
+        { text: 'Corrected Type', sortable: true, value: '__corrected_type__', width: '200', align: 'center', divider: true }
       ].concat(headers)
 
       // tableData
