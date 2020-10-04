@@ -55,5 +55,13 @@ export default {
     }).catch((err) => {
       errorCallback(err)
     })
+  },
+
+  listSources(callback, errorCallback) {
+    axios.get('/api/v1/source/').then((res) => {
+      callback(res.data)
+    }).catch((err) => {
+      errorCallback(err)
+    })
   }
 }

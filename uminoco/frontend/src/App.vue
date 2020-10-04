@@ -12,6 +12,16 @@
           </v-list-item-content>
         </v-list-item>
 
+        <v-list-item to="/source">
+          <v-list-item-action>
+            <!-- <v-icon>mdi-duck</v-icon> -->
+            <v-icon>mdi-water</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Data Sources</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
         <v-list-item to="/table">
           <v-list-item-action>
             <v-icon>mdi-table-large</v-icon>
@@ -23,7 +33,7 @@
 
         <v-list-item to="/table_migration">
           <v-list-item-action>
-            <v-icon>mdi-table-large</v-icon>
+            <v-icon>mdi-call-merge</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>TableMigration</v-list-item-title>

@@ -263,6 +263,42 @@ def migraate_table():
         return jsonify({"message": f"Failed in execution migrate query: {ex}"}), 500
 
 
+@app.route('/api/v1/source/')
+def source_list():
+    keys = ['source_id', 'table_count', 'total_rows', 'total_bytes', 'oldest_table_create_at', 'newest_table_create_at']
+    query = "SELECT source_id, count(0) as table_count, sum(total_rows) as total_rows, sum(total_bytes) as total_bytes, min(`__create_at` ) oldest_table, max(`__create_at` ) newest_table_create_at from system.tables as sys JOIN schema_table scm ON scm.table_name = sys.name GROUP BY source_id"
+    res = client.execute(query)
+
+    res_map_list = []
+    for r in res:
+        table = {k: v for k, v in zip(keys, list(r))}
+        res_map_list.append(table)
+
+    return jsonify(res_map_list), 200
+
+
+@app.route('/api/v1/source/<source_id>')
+def source_detail(source_id=None):
+    keys = ['table_name', 'total_rows', 'total_bytes', 'create_at', 'schema']
+    query = "SELECT table_name, total_rows, total_bytes, __create_at, JSONExtractRaw(schema, 'schema') schema FROM system.tables as sys JOIN schema_table scm ON scm.table_name = sys.name WHERE source_id = %(source_id)s and sys.database = %(database)s AND sys.primary_key = '__create_at'"
+
+    res = client.execute(query, {'source_id': source_id, 'database': 'default'})
+
+    res_map = {}
+    res_tables = []
+    for r in res:
+        table = {k: v for k, v in zip(keys, list(r))}
+        table['schema'] = json.loads(table['schema'])
+        res_tables.append(table)
+    res_map['tables'] = res_tables
+
+    # todo merge schemas
+
+
+    return jsonify(res_map), 200
+
+
+
 @app.route('/api/v1/source_types/')
 def source_settings():
     query = "SELECT source_id, JSONExtractRaw(source_setting, 'types') as types, __create_at from __source_settings WHERE visitParamHas(source_setting, 'types') = 1 and isValidJSON(source_setting) ORDER BY source_id"
