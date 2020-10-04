@@ -9,7 +9,7 @@
     <v-container>
       <v-card>
         <v-card-title>
-          Column and Types
+          {{this.sourceId + ' - Column and Types'}}
           <v-spacer></v-spacer>
           <v-text-field
             v-model="search"
@@ -19,7 +19,7 @@
             hide-details
           ></v-text-field>
         </v-card-title>
-        <v-data-table v-if="tableData" disable-pagination hide-default-footer :headers="headers" :items="tableData" :search="search" no-data-text="Data not found...">
+        <v-data-table v-if="tableData" :headers="headers" :items="tableData" :search="search" no-data-text="Data not found...">
           <template v-slot:[`item.__corrected_type__`]="{item}" >
             <v-text-field v-model="correctedTypes[item.__column_name__]"
             placeholder="Auto Detect"
@@ -42,7 +42,7 @@
       <v-row>
         <v-col class="text-center" cols="12" sm="10"></v-col> <!-- dummy -->
         <v-col class="text-center" cols="12" sm="2">
-          <v-btn color="success" @click=applyCorrectTypes() >Apply</v-btn>
+          <v-btn color="success" @click=applyCorrectTypes() :disabled=btnDisabled>Apply</v-btn>
         </v-col>
       </v-row>
     </v-container>
@@ -52,8 +52,7 @@
       v-model="snackbar"
       :timeout=2000
     >
-      'Apply complete!!
-
+      Apply Completed!!
       <template v-slot:action="{ attrs }">
         <v-btn
           color="blue"
@@ -86,7 +85,9 @@ export default {
     specifiedTypes: null,
     tableNames: null,
     correctedTypes: {},
-    snackbar: false
+    btnDisabled: false,
+    snackbar: false,
+    snackbarMessage: ''
   }),
   mounted() {
     Clickhouse.sourceSpecifiedTypes(this.sourceId, res => {
@@ -128,17 +129,24 @@ export default {
       return moment(new Date(createAt)).format('YYYY-MM-DD HH:mm:ss')
     },
     applyCorrectTypes() {
+      this.btnDisabled = true
+
       const postData = {}
       Object.keys(this.correctedTypes).forEach(k => {
         if (this.correctedTypes[k] === null) return
+        if (this.correctedTypes[k].length <= 0) return
         postData[k] = this.correctedTypes[k]
       })
 
       Clickhouse.updateSourceTypes(this.sourceId, postData, res => {
-        console.log(res)
+        this.snackbarMessage = 'Apply Success!!'
         this.snackbar = true
+        this.btnDisabled = false
       },
       err => {
+        this.snackbarMessage = err.message
+        this.snackbar = true
+        this.btnDisabled = false
         console.log(err)
       })
     }
