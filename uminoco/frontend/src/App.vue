@@ -12,6 +12,8 @@
           </v-list-item-content>
         </v-list-item>
 
+        <v-divider></v-divider>
+
         <v-list-item to="/source">
           <v-list-item-action>
             <!-- <v-icon>mdi-duck</v-icon> -->
@@ -21,6 +23,8 @@
             <v-list-item-title>Data Sources</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+
+        <v-divider></v-divider>
 
         <v-list-item to="/table">
           <v-list-item-action>
@@ -39,6 +43,8 @@
             <v-list-item-title>TableMigration</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+
+        <v-divider></v-divider>
 
       </v-list>
     </v-navigation-drawer>

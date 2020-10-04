@@ -33,6 +33,11 @@
           <template v-slot:[`item.oldest_table_create_at`]="{item}" >
             {{createAtFormat(item.oldest_table_create_at)}}
           </template>
+          <template v-slot:[`item.types`]="{item}" >
+            <router-link :to="{ name: 'SourceTypeSettings', params: { sourceId: item.source_id }}" > <!-- Todo -->
+              <v-icon>mdi-cog</v-icon>
+            </router-link>
+          </template>
         </v-data-table>
 
         <v-data-table
@@ -64,7 +69,8 @@ export default {
       { text: 'Total Row Count', sortable: true, value: 'total_rows' },
       { text: 'Total Size', sortable: true, value: 'total_bytes' },
       { text: 'Newest Table Created At', sortable: true, value: 'newest_table_create_at' },
-      { text: 'Oldest Table Created At', sortable: true, value: 'oldest_table_create_at' }
+      { text: 'Oldest Table Created At', sortable: true, value: 'oldest_table_create_at' },
+      { text: '', sortable: true, value: 'types' }
     ],
     sources: null,
     // tables: null,
