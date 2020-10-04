@@ -277,28 +277,6 @@ def source_list():
     return jsonify(res_map_list), 200
 
 
-@app.route('/api/v1/source/<source_id>')
-def source_detail(source_id=None):
-    keys = ['table_name', 'total_rows', 'total_bytes', 'create_at', 'schema']
-    query = "SELECT table_name, total_rows, total_bytes, __create_at, JSONExtractRaw(schema, 'schema') schema FROM system.tables as sys JOIN schema_table scm ON scm.table_name = sys.name WHERE source_id = %(source_id)s and sys.database = %(database)s AND sys.primary_key = '__create_at'"
-
-    res = client.execute(query, {'source_id': source_id, 'database': 'default'})
-
-    res_map = {}
-    res_tables = []
-    for r in res:
-        table = {k: v for k, v in zip(keys, list(r))}
-        table['schema'] = json.loads(table['schema'])
-        res_tables.append(table)
-    res_map['tables'] = res_tables
-
-    # todo merge schemas
-
-
-    return jsonify(res_map), 200
-
-
-
 @app.route('/api/v1/source_types/')
 def source_settings():
     query = "SELECT source_id, JSONExtractRaw(source_setting, 'types') as types, __create_at from __source_settings WHERE visitParamHas(source_setting, 'types') = 1 and isValidJSON(source_setting) ORDER BY source_id"
@@ -311,6 +289,90 @@ def source_settings():
 
     return jsonify(res_map), 200
 
+
+@app.route('/api/v1/source_types/<source_id>')
+def source_detail(source_id=None):
+    res_map = {}
+
+    # Current Specified Types
+    t_query = "SELECT source_id, JSONExtractRaw(source_setting, 'types') as types, __create_at from __source_settings WHERE source_id = %(source_id)s AND visitParamHas(source_setting, 'types') = 1 and isValidJSON(source_setting) ORDER BY source_id"
+    t_res = client.execute(t_query, {'source_id': source_id})
+
+    res_map['specified_types'] = {}
+    for r in t_res:
+        s, t, c = r
+        res_map['specified_types'] = json.loads(t)
+
+    # schemas
+    keys = ['table_name', 'total_rows', 'total_bytes', 'create_at', 'schema']
+    query = "SELECT table_name, total_rows, total_bytes, __create_at, JSONExtractRaw(schema, 'schema') schema FROM system.tables as sys JOIN schema_table scm ON scm.table_name = sys.name WHERE source_id = %(source_id)s and sys.database = %(database)s AND sys.primary_key = '__create_at'"
+    res = client.execute(query, {'source_id': source_id, 'database': 'default'})
+
+    res_tables = []
+    res_table_names = []
+    for r in res:
+        table = {k: v for k, v in zip(keys, list(r))}
+        table['schema'] = json.loads(table['schema'])
+        res_tables.append(table)
+        res_table_names.append(table['table_name'])
+    res_map['table_names'] = res_table_names
+
+    # merge schemas
+    columns_uniq = set([col for col in res_map['specified_types'].keys()])
+    for table in res_tables:
+        for col, typ in table['schema'].items():
+            columns_uniq.add(col)
+
+    columns = {}
+    for column_name in sorted(list(columns_uniq)):
+        columns[column_name] = {}
+
+        types = {}
+        for table in res_tables:
+            table_name = table['table_name']
+            _type = table['schema'].get(column_name, None)
+            types[table_name] = _type
+
+        selectable_types = list(set([t for t in types.values() if t]))
+
+        columns[column_name] = {
+            'types': types,
+            'specified_type': res_map['specified_types'].get(column_name, None),
+            'selectable_types': selectable_types
+        }
+    res_map['columns'] = columns
+
+    return jsonify(res_map), 200
+
+
+@app.route('/api/v1/source_types/<source_id>/apply', methods=["POST"])
+def source_types_apply(source_id=None):
+    new_specified_types_json = request.form.get("new_specified_types", None)
+
+    if new_specified_types_json is None:
+        return jsonify({"message": "New specified types are not provided."}), 400
+
+    # already exists?
+    query = "SELECT source_setting as count from __source_settings WHERE source_id = %(source_id)s"
+    res = client.execute(query, {"source_id": source_id})
+
+    #Todo: error handling
+
+    setting_json = {}
+    if len(res) > 0:
+        setting_json = json.loads(res[0][0])
+        query = "ALTER TABLE default.`__source_settings` UPDATE source_setting = %(setting)s WHERE source_id = %(source_id)s"
+    else:
+        query = "INSERT INTO default.`__source_settings` (source_id, source_setting) VALUES (%(source_id)s, %(setting)s)"
+
+    setting_json['types'] = json.loads(new_specified_types_json)
+    res = client.execute(query, {"source_id": source_id, "setting": json.dumps(setting_json)})
+
+    #Todo: error handling
+
+    #Todo: reload grebe
+
+    return jsonify(res), 200
 
 
 @app.route('/api/v1/disk_usage')
