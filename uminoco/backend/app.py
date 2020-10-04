@@ -352,27 +352,26 @@ def source_types_apply(source_id=None):
     if new_specified_types_json is None:
         return jsonify({"message": "New specified types are not provided."}), 400
 
-    # already exists?
-    query = "SELECT source_setting as count from __source_settings WHERE source_id = %(source_id)s"
-    res = client.execute(query, {"source_id": source_id})
+    try:
+        # already exists?
+        query = "SELECT source_setting as count from __source_settings WHERE source_id = %(source_id)s"
+        res = client.execute(query, {"source_id": source_id})
 
-    #Todo: error handling
+        setting_json = {}
+        if len(res) > 0:
+            setting_json = json.loads(res[0][0])
+            query = "ALTER TABLE default.`__source_settings` UPDATE source_setting = %(setting)s WHERE source_id = %(source_id)s"
+        else:
+            query = "INSERT INTO default.`__source_settings` (source_id, source_setting) VALUES (%(source_id)s, %(setting)s)"
 
-    setting_json = {}
-    if len(res) > 0:
-        setting_json = json.loads(res[0][0])
-        query = "ALTER TABLE default.`__source_settings` UPDATE source_setting = %(setting)s WHERE source_id = %(source_id)s"
-    else:
-        query = "INSERT INTO default.`__source_settings` (source_id, source_setting) VALUES (%(source_id)s, %(setting)s)"
-
-    setting_json['types'] = json.loads(new_specified_types_json)
-    res = client.execute(query, {"source_id": source_id, "setting": json.dumps(setting_json)})
-
-    #Todo: error handling
+        setting_json['types'] = json.loads(new_specified_types_json)
+        res = client.execute(query, {"source_id": source_id, "setting": json.dumps(setting_json)})
+    except Exception as ex:
+        return jsonify({"message": f"Failed to apply...: {ex}"}), 500
 
     #Todo: reload grebe
 
-    return jsonify(res), 200
+    return jsonify({"message": "ok"}), 200
 
 
 @app.route('/api/v1/disk_usage')
