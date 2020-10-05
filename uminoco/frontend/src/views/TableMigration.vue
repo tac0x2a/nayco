@@ -20,10 +20,10 @@
               <v-container>
                 <div v-if="tableNames">
                   <v-row no-gutters>
-                    <v-col class="pr-8" key="1" cols="12" sm="6">
+                    <v-col key="1" cols="12" sm="5">
                       <v-select v-model="srcTableName" :items="tableNames" label="From" required></v-select>
                     </v-col>
-                    <v-col class="pl-8" key="2" cols="12" sm="6">
+                    <v-col key="2" cols="12" offset-sm="1" sm="5">
                       <v-select v-model="dstTableName" :items="tableNames" label="To" required></v-select>
                     </v-col>
                   </v-row>
