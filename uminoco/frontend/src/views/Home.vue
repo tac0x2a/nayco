@@ -13,9 +13,9 @@
         </template>
       </v-banner>
 
-      <v-row>
+      <v-row align="stretch">
         <v-col key="1" cols="12" sm="4">
-          <v-card class="mx-auto">
+          <v-card class="mx-auto" height="100%">
             <v-card-text>
               <v-icon>mdi-table-large</v-icon>
               <p class="display-1 text--primary">Tables Manager</p>
@@ -30,7 +30,7 @@
         </v-col>
 
         <v-col key="1" cols="12" sm="4">
-          <v-card class="mx-auto">
+          <v-card class="mx-auto" height="100%">
             <v-card-text>
               <v-icon>mdi-call-merge</v-icon>
               <p class="display-1 text--primary">Migration Tables</p>
@@ -46,7 +46,7 @@
         </v-col>
 
         <v-col key="1" cols="12" sm="4">
-          <v-card class="mx-auto">
+          <v-card class="mx-auto" height="100%">
             <v-card-text>
               <v-icon>mdi-water</v-icon>
               <p class="display-1 text--primary">Data Source Manager</p>

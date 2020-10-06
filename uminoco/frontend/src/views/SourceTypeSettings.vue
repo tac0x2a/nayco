@@ -19,7 +19,7 @@
             hide-details
           ></v-text-field>
         </v-card-title>
-        <v-data-table v-if="tableData" :headers="headers" :items="tableData" :search="search" no-data-text="Data not found...">
+        <v-data-table v-if="tableData" fixed-header :headers="headers" :items="tableData" :search="search" no-data-text="Data not found...">
           <template v-slot:[`item.__corrected_type__`]="{item}" >
             <v-text-field v-model="correctedTypes[item.__column_name__]"
             placeholder="Auto Detect"
@@ -39,10 +39,9 @@
     </v-container>
 
     <v-container>
-      <v-row>
-        <v-col class="text-center" cols="12" sm="10"></v-col> <!-- dummy -->
-        <v-col class="text-center" cols="12" sm="2">
-          <v-btn color="success" @click=applyCorrectTypes() :disabled=btnDisabled>Apply</v-btn>
+      <v-row justify="end">
+        <v-col class="text-center" cols="12" sm="4">
+          <v-btn width="100%" color="success" @click=applyCorrectTypes() :disabled=btnDisabled>Apply</v-btn>
         </v-col>
       </v-row>
     </v-container>
