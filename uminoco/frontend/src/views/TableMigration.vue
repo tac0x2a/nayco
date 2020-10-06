@@ -7,7 +7,7 @@
     </v-breadcrumbs>
 
     <v-container>
-      <v-row no-gutters>
+      <v-row>
         <v-col key="1" cols="12" sm="12">
           <v-stepper v-model="stepperModel" vertical>
 
@@ -30,10 +30,14 @@
                   </v-row>
                 </div>
 
-              <v-btn color="primary" @click="stepperModel = 2" :disabled="!!(!srcTableName || !dstTableName)">Continue
-                <v-icon v-if="!!(!srcTableName || !dstTableName)" dark right>mdi-cancel</v-icon>
-                <v-icon v-else dark right>mdi-checkbox-marked-circle</v-icon>
-              </v-btn>
+                <v-row justify="end">
+                  <v-col key="1" cols="12" sm="12">
+                    <v-btn color="primary" width="100%" @click="stepperModel = 2" :disabled="!!(!srcTableName || !dstTableName)">Continue
+                      <v-icon v-if="!!(!srcTableName || !dstTableName)" dark right>mdi-cancel</v-icon>
+                      <v-icon v-else dark right>mdi-checkbox-marked-circle</v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
 
               </v-container>
 
@@ -52,7 +56,7 @@
                   <!-- <v-card> -->
 
                     <!-- Tdbles -->
-                    <v-row no-gutters>
+                    <v-row>
                       <v-col class="" key="1" cols="5" sm="5">
                         <p class="text-right">{{this.srcTableName}}</p>
                       </v-col>
@@ -145,10 +149,17 @@
                   <!-- </v-card> -->
 
                 </div><!-- v-if="this.dstColumns" -->
+
+                <v-row justify="end">
+                  <v-col class="" key="1" cols="12" sm="4" md="3">
+                    <v-btn width="100%" color="primary" @click=migrate :loading="isMigrating">Migrate!</v-btn>
+                  </v-col>
+                  <v-col class="" key="1" cols="12" sm="4" md="3">
+                    <v-btn text width="100%" @click="stepperModel = 1" :disabled="isMigrating" >Back</v-btn>
+                  </v-col>
+                </v-row>
               </v-container>
 
-              <v-btn color="primary" @click=migrate :loading="isMigrating">Migrate!</v-btn>
-              <v-btn text @click="stepperModel = 1" :disabled="isMigrating" >Back</v-btn>
             </v-stepper-content>
 
           </v-stepper>
