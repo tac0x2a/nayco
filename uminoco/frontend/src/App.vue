@@ -49,7 +49,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app color="indigo" dark>
+    <v-app-bar app color="primary" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>Uminoco</v-toolbar-title>
     </v-app-bar>
@@ -58,8 +58,8 @@
       <router-view />
     </v-main>
 
-    <v-footer color="indigo" app>
-      <span class="white--text"> tac0x2a &copy; {{ new Date().getFullYear() }} </span>
+    <v-footer app color="primary" dark>
+      <span> tac0x2a &copy; {{ new Date().getFullYear() }} </span>
     </v-footer>
 
   </v-app>

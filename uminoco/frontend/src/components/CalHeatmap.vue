@@ -4,9 +4,9 @@
       <div v-show="max">
         <div id="cal-heatmap"></div>
         <!-- TODO: Fix cal-heatmap navigation bugs -->
-        <!-- <v-btn id="prev" x-small color="primary" dark>&lt;</v-btn>
-        <v-btn v-on:click="reset" id="reset" x-small color="primary" dark>now</v-btn>
-        <v-btn id="next" x-small color="primary" dark>&gt;</v-btn> -->
+        <!-- <v-btn id="prev" x-small color="primary">&lt;</v-btn>
+        <v-btn v-on:click="reset" id="reset" x-small color="primary">now</v-btn>
+        <v-btn id="next" x-small color="primary">&gt;</v-btn> -->
       </div>
       <div v-show="!max">
         loading... {{this.failer}}

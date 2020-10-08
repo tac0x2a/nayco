@@ -6,7 +6,7 @@
         <template v-slot:actions>
           <v-btn
             text
-            color="indigo"
+            color="primary"
             href="https://github.com/tac0x2a/nayco"
             target="_blank"
           >View on Github</v-btn>
@@ -24,7 +24,7 @@
               </div>
             </v-card-text>
             <v-card-actions>
-              <v-btn text color="indigo accent-4" to="/table">Open</v-btn>
+              <v-btn text color="primary accent-4" to="/table">Open</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -40,7 +40,7 @@
               </div>
             </v-card-text>
             <v-card-actions>
-              <v-btn text color="indigo accent-4" to="/table_migration">Open</v-btn>
+              <v-btn text color="primary accent-4" to="/table_migration">Open</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -56,7 +56,7 @@
               </div>
             </v-card-text>
             <v-card-actions>
-              <v-btn text color="indigo accent-4" to="/source">Open</v-btn>
+              <v-btn text color="primary accent-4" to="/source">Open</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
