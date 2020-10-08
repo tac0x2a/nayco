@@ -33,8 +33,8 @@
                 <v-row justify="end">
                   <v-col key="1" cols="12" sm="12">
                     <v-btn color="primary" width="100%" @click="stepperModel = 2" :disabled="!!(!srcTableName || !dstTableName)">Continue
-                      <v-icon v-if="!!(!srcTableName || !dstTableName)" dark right>mdi-cancel</v-icon>
-                      <v-icon v-else dark right>mdi-checkbox-marked-circle</v-icon>
+                      <v-icon v-if="!!(!srcTableName || !dstTableName)" right>mdi-cancel</v-icon>
+                      <v-icon v-else right>mdi-checkbox-marked-circle</v-icon>
                     </v-btn>
                   </v-col>
                 </v-row>
