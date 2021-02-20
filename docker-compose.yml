@@ -59,7 +59,7 @@ services:
 
   # Portainer - Monitoring containers
   portainer: # admin - tryportainer
-    image: portainer/portainer:1.24.1-alpine
+    image: portainer/portainer-ce:2.1.1-alpine
     hostname: portainer
     restart: always
     ports:
