@@ -1,4 +1,4 @@
-FROM rabbitmq:3.8.5-alpine as rabbitmq-nayco
+FROM rabbitmq:3.8.12-management-alpine as rabbitmq-nayco
 
 ADD definitions.json  /opt/
 ADD rabbitmq.config   /etc/rabbitmq/
