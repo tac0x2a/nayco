@@ -45,7 +45,7 @@ services:
 
   # Column-oriented DWH. db=default, user=default, pass=default
   clickhouse:
-    image: yandex/clickhouse-server:20.9.2.20
+    image: yandex/clickhouse-server:20.12.6.29-alpine
     hostname: clickhouse
     restart: always
     ports:
@@ -59,7 +59,7 @@ services:
 
   # Portainer - Monitoring containers
   portainer: # admin - tryportainer
-    image: portainer/portainer:1.24.1-alpine
+    image: portainer/portainer-ce:2.1.1-alpine
     hostname: portainer
     restart: always
     ports:
@@ -115,7 +115,7 @@ services:
 
   # Node-RED
   node-red:
-    image: nodered/node-red:1.1.3-minimal
+    image: nodered/node-red:1.2.9-12-minimal
     hostname: nodered
     restart: always
     ports:
@@ -132,7 +132,7 @@ services:
   # Filebrowser
   # admin:admin
   filebrowser:
-    image: filebrowser/filebrowser:v2
+    image: filebrowser/filebrowser:v2.11.0-alpine
     hostname: filebrowser
     restart: always
     ports:
