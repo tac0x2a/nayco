@@ -45,7 +45,7 @@ services:
 
   # Column-oriented DWH. db=default, user=default, pass=default
   clickhouse:
-    image: yandex/clickhouse-server:20.9.2.20
+    image: yandex/clickhouse-server:20.12.6.29-alpine
     hostname: clickhouse
     restart: always
     ports:
