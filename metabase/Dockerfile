@@ -1,4 +1,4 @@
-FROM metabase/metabase:v0.38.0.1 as metabase-with-clickhouse
+FROM metabase/metabase:v0.40.1 as metabase-with-clickhouse
 
 # /plugins/ is default path to plugins dir.
 ADD plugins/*.jar /plugins/
